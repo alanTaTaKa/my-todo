@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { AuthPanel } from './components/AuthPanel'
 import { FilterBar } from './components/FilterBar'
 import { Pagination } from './components/Pagination'
 import { RecycleBin } from './components/RecycleBin'
@@ -8,6 +9,7 @@ import { TaskInput } from './components/TaskInput'
 import { TaskItem } from './components/TaskItem'
 import { ThemePanel } from './components/ThemePanel'
 import { VersionPanel } from './components/VersionPanel'
+import { useAuth } from './hooks/useAuth'
 import { useTags } from './hooks/useTags'
 import { useTasks } from './hooks/useTasks'
 import { useTheme } from './hooks/useTheme'
@@ -42,6 +44,8 @@ function App() {
     deleteSavedPalette,
   } = useTheme()
 
+  const { user, loading: authLoading, register, login, logout } = useAuth()
+
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<StatusFilter>('all')
   const [dateFilter, setDateFilter] = useState<DateFilter>('all')
@@ -53,6 +57,7 @@ function App() {
   const [statsOpen, setStatsOpen] = useState(false)
   const [versionOpen, setVersionOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
+  const [accountOpen, setAccountOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -257,6 +262,18 @@ function App() {
             </button>
             <button
               type="button"
+              onClick={() => setAccountOpen(true)}
+              className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-ink-soft transition hover:text-ink"
+            >
+              <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6" />
+              </svg>
+              账号
+              {user && <span className="size-1.5 rounded-full bg-sage" />}
+            </button>
+            <button
+              type="button"
               onClick={() => setVersionOpen(true)}
               aria-label={`当前版本 v${CURRENT_VERSION}，查看更新内容`}
               className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-ink-soft transition hover:text-ink"
@@ -282,6 +299,17 @@ function App() {
           onRenameSavedPalette={renameSavedPalette}
           onDeleteSavedPalette={deleteSavedPalette}
           onClose={() => setThemeOpen(false)}
+        />
+      )}
+
+      {accountOpen && (
+        <AuthPanel
+          user={user}
+          loading={authLoading}
+          onLogin={login}
+          onRegister={register}
+          onLogout={logout}
+          onClose={() => setAccountOpen(false)}
         />
       )}
 
