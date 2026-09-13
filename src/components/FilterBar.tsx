@@ -78,12 +78,12 @@ export function FilterBar({
           onChange={(event) => onQueryChange(event.target.value)}
           placeholder="搜索任务…"
           aria-label="搜索任务"
-          className="w-full rounded-2xl border border-white/70 bg-white/50 py-2.5 pl-10 pr-3 text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-gold-soft focus:bg-white/85"
+          className="w-full rounded-2xl border border-line bg-surface-2 py-2.5 pl-10 pr-3 text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-gold-soft focus:bg-surface-strong"
         />
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        <div className="flex rounded-full bg-white/50 p-0.5">
+        <div className="flex rounded-full bg-surface-2 p-0.5">
           {STATUS_OPTIONS.map((option) => {
             const active = status === option.key
             return (
@@ -94,7 +94,7 @@ export function FilterBar({
                 aria-pressed={active}
                 className={`rounded-full px-3 py-1 text-xs transition ${
                   active
-                    ? 'bg-gold text-white shadow-sm'
+                    ? 'bg-gold text-on-accent shadow-sm'
                     : 'text-ink-soft hover:text-ink'
                 }`}
               >
@@ -110,8 +110,8 @@ export function FilterBar({
           aria-expanded={tagsOpen}
           className={`flex items-center gap-1 rounded-full border px-3 py-1 text-xs transition ${
             tagsOpen
-              ? 'border-gold-soft bg-white/80 text-ink'
-              : 'border-white/70 bg-white/40 text-ink-soft hover:text-ink'
+              ? 'border-gold-soft bg-surface-strong text-ink'
+              : 'border-line bg-surface text-ink-soft hover:text-ink'
           }`}
         >
           <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -175,7 +175,7 @@ export function FilterBar({
             onClick={onToggleSortDirection}
             aria-label="切换排序方向"
             title={sortDirection === 'asc' ? '当前升序' : '当前降序'}
-            className="grid size-6 place-items-center rounded-full border border-white/70 bg-white/40 text-ink-soft transition hover:text-ink"
+            className="grid size-6 place-items-center rounded-full border border-line bg-surface text-ink-soft transition hover:text-ink"
           >
             <svg viewBox="0 0 24 24" className={`size-3.5 transition-transform ${sortDirection === 'asc' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14" />
@@ -199,8 +199,8 @@ function FilterChip({ active, onClick, label, color }: FilterChipProps) {
   const style = active
     ? color
       ? { backgroundColor: color.soft, color: color.strong, borderColor: color.strong }
-      : { backgroundColor: '#f3e3c2', color: '#b8842a', borderColor: '#b8842a' }
-    : { backgroundColor: 'rgba(255,255,255,0.4)', color: 'var(--color-ink-soft)', borderColor: 'rgba(138,127,112,0.25)' }
+      : { backgroundColor: 'var(--color-gold)', color: 'var(--color-on-accent)', borderColor: 'var(--color-gold)' }
+    : { backgroundColor: 'var(--color-chip)', color: 'var(--color-chip-text)', borderColor: 'var(--color-chip-line)' }
 
   return (
     <button

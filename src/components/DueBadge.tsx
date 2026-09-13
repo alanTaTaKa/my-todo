@@ -14,7 +14,7 @@ export function DueBadge({ dueDate, completed }: DueBadgeProps) {
       style={
         overdue
           ? { backgroundColor: '#f3dcdc', color: '#c25b5b' }
-          : { backgroundColor: 'rgba(255,255,255,0.55)', color: 'var(--color-ink-soft)' }
+          : { backgroundColor: 'var(--color-chip)', color: 'var(--color-chip-text)' }
       }
     >
       <svg viewBox="0 0 24 24" className="size-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

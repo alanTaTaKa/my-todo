@@ -6,9 +6,11 @@ import { StatsPanel } from './components/StatsPanel'
 import { TagManager } from './components/TagManager'
 import { TaskInput } from './components/TaskInput'
 import { TaskItem } from './components/TaskItem'
+import { ThemePanel } from './components/ThemePanel'
 import { VersionPanel } from './components/VersionPanel'
 import { useTags } from './hooks/useTags'
 import { useTasks } from './hooks/useTasks'
+import { useTheme } from './hooks/useTheme'
 import { matchesDateFilter } from './lib/date'
 import { sortTasks } from './lib/sort'
 import { CURRENT_VERSION } from './lib/version'
@@ -29,6 +31,16 @@ function App() {
     emptyTrash,
   } = useTasks()
   const { tags, addTag, renameTag, deleteTag } = useTags()
+  const {
+    themeId,
+    setThemeId,
+    customPalette,
+    applyCustomTheme,
+    savedPalettes,
+    addSavedPalette,
+    renameSavedPalette,
+    deleteSavedPalette,
+  } = useTheme()
 
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<StatusFilter>('all')
@@ -40,6 +52,7 @@ function App() {
   const [binOpen, setBinOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
   const [versionOpen, setVersionOpen] = useState(false)
+  const [themeOpen, setThemeOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -112,7 +125,7 @@ function App() {
           <p className="mt-2 text-sm text-ink-soft">慢慢来，一件一件完成就好</p>
         </header>
 
-        <div className="rounded-3xl border border-white/60 bg-white/40 p-4 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.5)] backdrop-blur-xl sm:p-6">
+        <div className="rounded-3xl border border-line bg-surface p-4 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.5)] backdrop-blur-xl sm:p-6">
           <TaskInput onAdd={addTask} />
 
           <FilterBar
@@ -169,7 +182,8 @@ function App() {
 
                   {pageCompleted.length > 0 && (
                     <section>
-                      <h2 className="px-3 pb-1 text-xs font-medium tracking-wider text-ink-soft/80">
+                      <h2 className="flex items-center gap-1.5 px-3 pb-1 text-xs font-medium tracking-wider text-ink-soft/80">
+                        <span className="size-1.5 rounded-full bg-sage" />
                         已完成 · {filteredCompleted.length}
                       </h2>
                       <ul className="space-y-1">
@@ -208,7 +222,7 @@ function App() {
             <button
               type="button"
               onClick={() => setStatsOpen(true)}
-              className="inline-flex items-center gap-1 rounded-full border border-white/60 bg-white/40 px-2.5 py-1 text-ink-soft transition hover:text-ink"
+              className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-ink-soft transition hover:text-ink"
             >
               <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
@@ -218,7 +232,7 @@ function App() {
             <button
               type="button"
               onClick={() => setBinOpen(true)}
-              className="inline-flex items-center gap-1 rounded-full border border-white/60 bg-white/40 px-2.5 py-1 text-ink-soft transition hover:text-ink"
+              className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-ink-soft transition hover:text-ink"
             >
               <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 6h18" />
@@ -229,9 +243,23 @@ function App() {
             </button>
             <button
               type="button"
+              onClick={() => setThemeOpen(true)}
+              className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-ink-soft transition hover:text-ink"
+            >
+              <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.8-.9 1.8-1.9 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.8 1.8-1.8H16a5 5 0 0 0 5-5c0-3.9-4-6.9-9-6.9Z" />
+                <circle cx="7.5" cy="11" r="1" fill="currentColor" />
+                <circle cx="10.5" cy="7.5" r="1" fill="currentColor" />
+                <circle cx="15" cy="8" r="1" fill="currentColor" />
+              </svg>
+              主题
+            </button>
+            <button
+              type="button"
               onClick={() => setVersionOpen(true)}
               aria-label={`当前版本 v${CURRENT_VERSION}，查看更新内容`}
-              className="inline-flex items-center gap-1 rounded-full border border-white/60 bg-white/40 px-2.5 py-1 text-ink-soft transition hover:text-ink"
+              className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-ink-soft transition hover:text-ink"
             >
               v{CURRENT_VERSION}
             </button>
@@ -241,6 +269,20 @@ function App() {
 
       {versionOpen && (
         <VersionPanel onClose={() => setVersionOpen(false)} />
+      )}
+
+      {themeOpen && (
+        <ThemePanel
+          themeId={themeId}
+          customPalette={customPalette}
+          savedPalettes={savedPalettes}
+          onSelect={setThemeId}
+          onSelectCustom={applyCustomTheme}
+          onAddSavedPalette={addSavedPalette}
+          onRenameSavedPalette={renameSavedPalette}
+          onDeleteSavedPalette={deleteSavedPalette}
+          onClose={() => setThemeOpen(false)}
+        />
       )}
 
       {statsOpen && (

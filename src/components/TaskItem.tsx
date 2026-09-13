@@ -75,7 +75,7 @@ export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemP
   const hasMeta = task.priority !== 'none' || task.dueDate !== null || taskTags.length > 0
 
   return (
-    <li className="group rounded-2xl px-3 py-3 transition hover:bg-white/50">
+    <li className="group rounded-2xl px-3 py-3 transition hover:bg-surface-2">
       <div className="flex items-start gap-3">
         <button
           type="button"
@@ -84,8 +84,8 @@ export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemP
           aria-pressed={task.completed}
           className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border transition ${
             task.completed
-              ? 'border-gold bg-gold text-white'
-              : 'border-ink-soft/40 bg-white/50 text-transparent hover:border-gold'
+              ? 'border-sage bg-sage/20 text-[color:var(--color-sage-text)]'
+              : 'border-ink-soft/40 bg-surface-2 text-transparent hover:border-gold'
           }`}
         >
           <svg viewBox="0 0 20 20" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -102,7 +102,7 @@ export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemP
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={handleKeyDown}
                 aria-label="编辑任务"
-                className="w-full rounded-lg border border-gold-soft/70 bg-white/90 px-2 py-1.5 text-[15px] text-ink outline-none"
+                className="w-full rounded-lg border border-gold-soft/70 bg-surface-solid px-2 py-1.5 text-[15px] text-ink outline-none"
               />
 
               <div className="flex items-center gap-2">
@@ -125,9 +125,9 @@ export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemP
                                 borderColor: option.strong,
                               }
                             : {
-                                backgroundColor: 'rgba(255,255,255,0.5)',
-                                color: 'var(--color-ink-soft)',
-                                borderColor: 'rgba(138,127,112,0.3)',
+                                backgroundColor: 'var(--color-chip)',
+                                color: 'var(--color-chip-text)',
+                                borderColor: 'var(--color-chip-line)',
                               }
                         }
                       >
@@ -146,7 +146,7 @@ export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemP
                   value={draftDue}
                   onChange={(event) => setDraftDue(event.target.value)}
                   aria-label="截止日期与时间"
-                  className="min-w-0 flex-1 rounded-lg border border-white/70 bg-white/80 px-2 py-1 text-xs text-ink outline-none transition focus:border-gold-soft"
+                  className="min-w-0 flex-1 rounded-lg border border-line bg-surface-strong px-2 py-1 text-xs text-ink outline-none transition focus:border-gold-soft"
                 />
                 {draftDue && (
                   <button
@@ -181,9 +181,9 @@ export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemP
                                   borderColor: palette.strong,
                                 }
                               : {
-                                  backgroundColor: 'rgba(255,255,255,0.5)',
-                                  color: 'var(--color-ink-soft)',
-                                  borderColor: 'rgba(138,127,112,0.3)',
+                                  backgroundColor: 'var(--color-chip)',
+                                  color: 'var(--color-chip-text)',
+                                  borderColor: 'var(--color-chip-line)',
                                 }
                           }
                         >
@@ -199,14 +199,14 @@ export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemP
                 <button
                   type="button"
                   onClick={commit}
-                  className="rounded-lg bg-gold px-3 py-1 text-xs font-medium text-white transition hover:bg-gold-soft"
+                  className="rounded-lg bg-gold px-3 py-1 text-xs font-medium text-on-accent transition hover:bg-gold-soft"
                 >
                   保存
                 </button>
                 <button
                   type="button"
                   onClick={cancel}
-                  className="rounded-lg px-3 py-1 text-xs text-ink-soft transition hover:bg-white/70"
+                  className="rounded-lg px-3 py-1 text-xs text-ink-soft transition hover:bg-surface-strong"
                 >
                   取消
                 </button>
@@ -245,7 +245,7 @@ export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemP
               type="button"
               onClick={startEditing}
               aria-label="编辑"
-              className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-white/70 hover:text-ink"
+              className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
             >
               <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9" />

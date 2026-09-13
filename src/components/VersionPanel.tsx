@@ -20,7 +20,7 @@ export function VersionPanel({ onClose }: VersionPanelProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/25 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-overlay p-0 sm:items-center sm:p-4"
       onClick={onClose}
       role="presentation"
     >
@@ -28,10 +28,10 @@ export function VersionPanel({ onClose }: VersionPanelProps) {
         role="dialog"
         aria-modal="true"
         aria-label="版本更新"
-        className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-t-3xl border border-white/60 bg-cream/95 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.6)] sm:rounded-3xl"
+        className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-t-3xl border border-line bg-cream/95 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.6)] sm:rounded-3xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-white/60 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <div>
             <h2 className="text-base font-semibold text-ink">版本更新</h2>
             <p className="mt-0.5 text-xs text-ink-soft">
@@ -42,7 +42,7 @@ export function VersionPanel({ onClose }: VersionPanelProps) {
             type="button"
             onClick={onClose}
             aria-label="关闭版本更新"
-            className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-white/70 hover:text-ink"
+            className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
           >
             <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -63,8 +63,8 @@ export function VersionPanel({ onClose }: VersionPanelProps) {
                   aria-pressed={active}
                   className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1 text-xs transition ${
                     active
-                      ? 'border-gold bg-gold text-white'
-                      : 'border-white/70 bg-white/40 text-ink-soft hover:text-ink'
+                      ? 'border-gold bg-gold text-on-accent'
+                      : 'border-line bg-surface text-ink-soft hover:text-ink'
                   }`}
                 >
                   v{item.version}
@@ -81,13 +81,13 @@ export function VersionPanel({ onClose }: VersionPanelProps) {
             })}
           </div>
 
-          <div className="mt-4 rounded-2xl border border-white/60 bg-white/40 p-4">
+          <div className="mt-4 rounded-2xl border border-line bg-surface p-4">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-lg font-semibold text-ink">
                 v{entry.version}
               </span>
               {entry.version === CURRENT_VERSION && (
-                <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[11px] text-gold">
+                <span className="rounded-full bg-gold px-2 py-0.5 text-[11px] text-on-accent">
                   当前版本
                 </span>
               )}

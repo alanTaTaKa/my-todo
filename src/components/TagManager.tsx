@@ -45,7 +45,7 @@ export function TagManager({ tags, onAdd, onRename, onDelete }: TagManagerProps)
   }
 
   return (
-    <div className="rounded-2xl border border-white/60 bg-white/35 p-3">
+    <div className="rounded-2xl border border-line bg-surface-soft p-3">
       <p className="mb-2 text-xs font-medium tracking-wide text-ink-soft">
         管理标签
       </p>
@@ -59,12 +59,12 @@ export function TagManager({ tags, onAdd, onRename, onDelete }: TagManagerProps)
             placeholder="新标签名称"
             aria-label="新标签名称"
             maxLength={12}
-            className="min-w-0 flex-1 rounded-xl border border-white/70 bg-white/70 px-3 py-2 text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-gold-soft focus:bg-white/90"
+            className="min-w-0 flex-1 rounded-xl border border-line bg-surface-strong px-3 py-2 text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-gold-soft focus:bg-surface-solid"
           />
           <button
             type="submit"
             disabled={!name.trim()}
-            className="shrink-0 rounded-xl bg-gold px-4 py-2 text-sm font-medium text-white transition hover:bg-gold-soft disabled:cursor-not-allowed disabled:opacity-40"
+            className="shrink-0 rounded-xl bg-gold px-4 py-2 text-sm font-medium text-on-accent transition hover:bg-gold-soft disabled:cursor-not-allowed disabled:opacity-40"
           >
             添加
           </button>
@@ -100,7 +100,7 @@ export function TagManager({ tags, onAdd, onRename, onDelete }: TagManagerProps)
             return (
               <li
                 key={tag.id}
-                className="flex items-center justify-between gap-2 rounded-xl px-2 py-1.5 transition hover:bg-white/60"
+                className="flex items-center justify-between gap-2 rounded-xl px-2 py-1.5 transition hover:bg-surface-2"
               >
                 {editing ? (
                   <>
@@ -111,20 +111,20 @@ export function TagManager({ tags, onAdd, onRename, onDelete }: TagManagerProps)
                       onKeyDown={handleRenameKeyDown}
                       aria-label="重命名标签"
                       maxLength={12}
-                      className="min-w-0 flex-1 rounded-lg border border-gold-soft/70 bg-white/90 px-2 py-1 text-sm text-ink outline-none"
+                      className="min-w-0 flex-1 rounded-lg border border-gold-soft/70 bg-surface-solid px-2 py-1 text-sm text-ink outline-none"
                     />
                     <div className="flex shrink-0 items-center gap-1">
                       <button
                         type="button"
                         onClick={commitRename}
-                        className="rounded-lg bg-gold px-2.5 py-1 text-xs font-medium text-white transition hover:bg-gold-soft"
+                        className="rounded-lg bg-gold px-2.5 py-1 text-xs font-medium text-on-accent transition hover:bg-gold-soft"
                       >
                         保存
                       </button>
                       <button
                         type="button"
                         onClick={cancelRename}
-                        className="rounded-lg px-2.5 py-1 text-xs text-ink-soft transition hover:bg-white/70"
+                        className="rounded-lg px-2.5 py-1 text-xs text-ink-soft transition hover:bg-surface-strong"
                       >
                         取消
                       </button>
@@ -147,7 +147,7 @@ export function TagManager({ tags, onAdd, onRename, onDelete }: TagManagerProps)
                         type="button"
                         onClick={() => startRename(tag)}
                         aria-label={`重命名标签 ${tag.name}`}
-                        className="grid size-7 place-items-center rounded-lg text-ink-soft transition hover:bg-white/70 hover:text-ink"
+                        className="grid size-7 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
                       >
                         <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 20h9" />

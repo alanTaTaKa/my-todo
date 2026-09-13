@@ -42,7 +42,7 @@ export function StatsPanel({ tasks, tags, onClose }: StatsPanelProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/25 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-overlay p-0 sm:items-center sm:p-4"
       onClick={onClose}
       role="presentation"
     >
@@ -50,10 +50,10 @@ export function StatsPanel({ tasks, tags, onClose }: StatsPanelProps) {
         role="dialog"
         aria-modal="true"
         aria-label="数据统计"
-        className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-t-3xl border border-white/60 bg-cream/95 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.6)] sm:rounded-3xl"
+        className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-t-3xl border border-line bg-cream/95 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.6)] sm:rounded-3xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-white/60 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <div>
             <h2 className="text-base font-semibold text-ink">数据统计</h2>
             <p className="mt-0.5 text-xs text-ink-soft">按标签维度查看</p>
@@ -62,7 +62,7 @@ export function StatsPanel({ tasks, tags, onClose }: StatsPanelProps) {
             type="button"
             onClick={onClose}
             aria-label="关闭统计"
-            className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-white/70 hover:text-ink"
+            className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
           >
             <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -98,7 +98,11 @@ export function StatsPanel({ tasks, tags, onClose }: StatsPanelProps) {
 
           <div className="mt-5 grid grid-cols-2 gap-2.5">
             <StatCard label="任务总数" value={total} accent="#8a7f70" />
-            <StatCard label="已完成" value={completed} accent="#5f8a5b" />
+            <StatCard
+              label="已完成"
+              value={completed}
+              accent="var(--color-sage-text)"
+            />
             <StatCard label="今日到期" value={dueToday} accent="#b8842a" />
             <StatCard label="逾期" value={overdue} accent="#c25b5b" />
           </div>
@@ -123,11 +127,11 @@ function TagTab({ active, onClick, label, color }: TagTabProps) {
   const style = active
     ? color
       ? { backgroundColor: color.soft, color: color.strong, borderColor: color.strong }
-      : { backgroundColor: '#f3e3c2', color: '#b8842a', borderColor: '#b8842a' }
+      : { backgroundColor: 'var(--color-gold)', color: 'var(--color-on-accent)', borderColor: 'var(--color-gold)' }
     : {
-        backgroundColor: 'rgba(255,255,255,0.5)',
-        color: 'var(--color-ink-soft)',
-        borderColor: 'rgba(138,127,112,0.25)',
+        backgroundColor: 'var(--color-chip)',
+        color: 'var(--color-chip-text)',
+        borderColor: 'var(--color-chip-line)',
       }
 
   return (
@@ -156,7 +160,7 @@ function ProgressRing({ value }: { value: number }) {
           cy="50"
           r={radius}
           fill="none"
-          stroke="rgba(138,127,112,0.15)"
+          stroke="var(--color-chip-line)"
           strokeWidth="8"
         />
         <circle
@@ -185,7 +189,7 @@ interface StatCardProps {
 
 function StatCard({ label, value, accent }: StatCardProps) {
   return (
-    <div className="rounded-2xl border border-white/60 bg-white/40 px-3 py-3">
+    <div className="rounded-2xl border border-line bg-surface px-3 py-3">
       <p className="text-xs text-ink-soft">{label}</p>
       <p className="mt-1 text-2xl font-semibold tabular-nums" style={{ color: accent }}>
         {value}

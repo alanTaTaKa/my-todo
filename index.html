@@ -6,6 +6,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#fbf7ef" />
     <title>今日待办 · Daily Calm</title>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('todo-app:theme')
+          var resolved
+          if (stored === 'custom') {
+            var css = localStorage.getItem('todo-app:custom-theme-css')
+            if (css) {
+              var style = document.createElement('style')
+              style.id = 'custom-theme-style'
+              style.textContent = css
+              document.head.appendChild(style)
+            }
+            resolved = 'custom'
+          } else if (stored === 'system') {
+            resolved = window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'fresh'
+          } else {
+            var ids = [
+              'fresh',
+              'dark',
+              'songlv',
+              'bishan',
+              'tianshuibi',
+              'tuihong',
+              'taoyao',
+              'qiubo',
+              'qianyun',
+              'mingyue',
+              'violet',
+            ]
+            resolved = ids.indexOf(stored) >= 0 ? stored : 'fresh'
+          }
+          document.documentElement.dataset.theme = resolved
+        } catch (error) {
+          document.documentElement.dataset.theme = 'fresh'
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

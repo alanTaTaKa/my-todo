@@ -39,7 +39,7 @@ export function RecycleBin({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/25 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-overlay p-0 sm:items-center sm:p-4"
       onClick={onClose}
       role="presentation"
     >
@@ -47,10 +47,10 @@ export function RecycleBin({
         role="dialog"
         aria-modal="true"
         aria-label="回收站"
-        className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-t-3xl border border-white/60 bg-cream/95 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.6)] sm:rounded-3xl"
+        className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-t-3xl border border-line bg-cream/95 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.6)] sm:rounded-3xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-white/60 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <div>
             <h2 className="text-base font-semibold text-ink">回收站</h2>
             <p className="mt-0.5 text-xs text-ink-soft">
@@ -61,7 +61,7 @@ export function RecycleBin({
             type="button"
             onClick={onClose}
             aria-label="关闭回收站"
-            className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-white/70 hover:text-ink"
+            className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
           >
             <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6 6 18M6 6l12 12" />
@@ -79,7 +79,7 @@ export function RecycleBin({
               {tasks.map((task) => (
                 <li
                   key={task.id}
-                  className="flex items-center gap-2 rounded-2xl px-3 py-2.5 transition hover:bg-white/50"
+                  className="flex items-center gap-2 rounded-2xl px-3 py-2.5 transition hover:bg-surface-2"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="break-words text-sm text-ink-soft line-through">
@@ -94,7 +94,7 @@ export function RecycleBin({
                   <button
                     type="button"
                     onClick={() => onRestore(task.id)}
-                    className="shrink-0 rounded-lg px-2.5 py-1 text-xs text-ink-soft transition hover:bg-white/70 hover:text-ink"
+                    className="shrink-0 rounded-lg px-2.5 py-1 text-xs text-ink-soft transition hover:bg-surface-strong hover:text-ink"
                   >
                     恢复
                   </button>
@@ -118,7 +118,7 @@ export function RecycleBin({
         </div>
 
         {tasks.length > 0 && (
-          <div className="border-t border-white/60 px-5 py-3 text-right">
+          <div className="border-t border-line px-5 py-3 text-right">
             <button
               type="button"
               onClick={handleEmpty}
