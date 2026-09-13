@@ -15,6 +15,8 @@ export interface Tag {
   name: string
   color: TagColorKey
   createdAt: number
+  updatedAt: number
+  deletedAt: number | null
 }
 
 export interface Task {

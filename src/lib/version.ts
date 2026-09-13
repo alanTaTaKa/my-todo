@@ -6,6 +6,17 @@ export interface VersionEntry {
 
 export const VERSIONS: VersionEntry[] = [
   {
+    version: '1.3.0',
+    date: '2026-09-13',
+    highlights: [
+      '云同步（Phase 2）：登录后任务与标签自动同步到云端，可在多设备间保持一致',
+      '冲突按 updatedAt 逐条 LWW；删除改为软删除墓碑，删除也能同步',
+      '服务端用 syncedAt 做增量拉取游标，首次登录把本地数据幂等合并上云',
+      '账号弹窗新增同步状态与「立即同步」；窗口聚焦、联网、定时自动补同步',
+      '标签数据结构补齐 updatedAt / deletedAt；不登录仍是纯本地模式',
+    ],
+  },
+  {
     version: '1.2.0',
     date: '2026-09-13',
     highlights: [

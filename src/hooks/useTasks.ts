@@ -1,10 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { Task } from '../types'
 import { loadTasks, saveTasks } from '../lib/storage'
+import { mergeById } from '../lib/merge'
 
 export type TaskPatch = Partial<
   Pick<Task, 'title' | 'priority' | 'dueDate' | 'tagIds'>
 >
+
+function sameTask(a: Task, b: Task): boolean {
+  return (
+    a.title === b.title &&
+    a.completed === b.completed &&
+    a.priority === b.priority &&
+    a.dueDate === b.dueDate &&
+    a.createdAt === b.createdAt &&
+    a.completedAt === b.completedAt &&
+    a.deletedAt === b.deletedAt &&
+    a.tagIds.length === b.tagIds.length &&
+    a.tagIds.every((id, index) => id === b.tagIds[index])
+  )
+}
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>(() => loadTasks())
@@ -109,6 +124,16 @@ export function useTasks() {
     setTasks((prev) => prev.filter((task) => task.deletedAt === null))
   }
 
+  const mergeTasks = useCallback((incoming: Task[]) => {
+    setTasks((prev) => {
+      const existingIds = new Set(prev.map((task) => task.id))
+      const filtered = incoming.filter(
+        (task) => task.deletedAt === null || existingIds.has(task.id),
+      )
+      return mergeById(prev, filtered, sameTask)
+    })
+  }, [])
+
   const visible = tasks.filter((task) => task.deletedAt === null)
   const activeTasks = visible.filter((task) => !task.completed)
   const completedTasks = visible.filter((task) => task.completed)
@@ -121,6 +146,7 @@ export function useTasks() {
     activeTasks,
     completedTasks,
     deletedTasks,
+    allTasks: tasks,
     addTask,
     toggleTask,
     updateTask,
@@ -129,5 +155,6 @@ export function useTasks() {
     restoreTask,
     purgeTask,
     emptyTrash,
+    mergeTasks,
   }
 }

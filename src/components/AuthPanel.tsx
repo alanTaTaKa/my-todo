@@ -1,23 +1,43 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import type { AuthUser } from '../lib/auth'
+import type { SyncStatus } from '../lib/sync'
 
 interface AuthPanelProps {
   user: AuthUser | null
   loading: boolean
+  syncStatus: SyncStatus
+  lastSyncedAt: number | null
+  syncError: string | null
   onLogin: (email: string, password: string) => Promise<void>
   onRegister: (email: string, password: string) => Promise<void>
   onLogout: () => Promise<void>
+  onSync: () => void
   onClose: () => void
 }
 
 type Mode = 'login' | 'register'
 
+function formatSyncTime(timestamp: number | null): string {
+  if (!timestamp) return '尚未同步'
+  const diff = Date.now() - timestamp
+  if (diff < 60_000) return '刚刚同步'
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)} 分钟前同步`
+  return `${new Date(timestamp).toLocaleTimeString('zh-CN', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })} 同步`
+}
+
 export function AuthPanel({
   user,
   loading,
+  syncStatus,
+  lastSyncedAt,
+  syncError,
   onLogin,
   onRegister,
   onLogout,
+  onSync,
   onClose,
 }: AuthPanelProps) {
   const [mode, setMode] = useState<Mode>('login')
@@ -70,6 +90,15 @@ export function AuthPanel({
     }
   }
 
+  const syncLabel =
+    syncStatus === 'syncing'
+      ? '同步中…'
+      : syncStatus === 'error'
+        ? syncError ?? '同步失败'
+        : syncStatus === 'synced'
+          ? formatSyncTime(lastSyncedAt)
+          : '尚未同步'
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-overlay p-0 sm:items-center sm:p-4"
@@ -87,7 +116,7 @@ export function AuthPanel({
           <div>
             <h2 className="text-base font-semibold text-ink">账号</h2>
             <p className="mt-0.5 text-xs text-ink-soft">
-              登录后即可开启云同步（即将上线）
+              登录后自动云同步；不登录仅保存在本机
             </p>
           </div>
           <button
@@ -116,9 +145,29 @@ export function AuthPanel({
                 </span>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-ink">{user.email}</p>
-                  <p className="mt-0.5 text-xs text-ink-soft">已登录 · 数据仍保存在本机</p>
+                  <p className="mt-0.5 text-xs text-ink-soft">已登录 · 数据同时保存到云端</p>
                 </div>
               </div>
+
+              <div className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm text-ink">{syncLabel}</p>
+                  <p className="mt-0.5 text-xs text-ink-soft">
+                    {syncStatus === 'error'
+                      ? '点击重试，本地数据不受影响'
+                      : '改动会自动同步，也可手动触发'}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={onSync}
+                  disabled={syncStatus === 'syncing'}
+                  className="shrink-0 rounded-full border border-line bg-surface-2 px-3 py-1.5 text-xs text-ink-soft transition hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {syncStatus === 'syncing' ? '同步中…' : '立即同步'}
+                </button>
+              </div>
+
               <button
                 type="button"
                 onClick={handleLogout}

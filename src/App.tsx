@@ -10,6 +10,7 @@ import { TaskItem } from './components/TaskItem'
 import { ThemePanel } from './components/ThemePanel'
 import { VersionPanel } from './components/VersionPanel'
 import { useAuth } from './hooks/useAuth'
+import { useSync } from './hooks/useSync'
 import { useTags } from './hooks/useTags'
 import { useTasks } from './hooks/useTasks'
 import { useTheme } from './hooks/useTheme'
@@ -23,6 +24,7 @@ function App() {
     activeTasks,
     completedTasks,
     deletedTasks,
+    allTasks,
     addTask,
     toggleTask,
     updateTask,
@@ -31,8 +33,9 @@ function App() {
     restoreTask,
     purgeTask,
     emptyTrash,
+    mergeTasks,
   } = useTasks()
-  const { tags, addTag, renameTag, deleteTag } = useTags()
+  const { tags, allTags, addTag, renameTag, deleteTag, mergeTags } = useTags()
   const {
     themeId,
     setThemeId,
@@ -45,6 +48,13 @@ function App() {
   } = useTheme()
 
   const { user, loading: authLoading, register, login, logout } = useAuth()
+
+  const {
+    status: syncStatus,
+    lastSyncedAt,
+    error: syncError,
+    syncNow,
+  } = useSync({ user, tasks: allTasks, tags: allTags, mergeTasks, mergeTags })
 
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<StatusFilter>('all')
@@ -119,7 +129,7 @@ function App() {
   const isEmpty = activeTasks.length === 0 && completedTasks.length === 0
   const hasNoMatches = !isEmpty && totalItems === 0
 
-  const allTasks = [...activeTasks, ...completedTasks]
+  const statsTasks = [...activeTasks, ...completedTasks]
 
   return (
     <div className="min-h-screen px-4 py-10 sm:py-16">
@@ -306,16 +316,20 @@ function App() {
         <AuthPanel
           user={user}
           loading={authLoading}
+          syncStatus={syncStatus}
+          lastSyncedAt={lastSyncedAt}
+          syncError={syncError}
           onLogin={login}
           onRegister={register}
           onLogout={logout}
+          onSync={syncNow}
           onClose={() => setAccountOpen(false)}
         />
       )}
 
       {statsOpen && (
         <StatsPanel
-          tasks={allTasks}
+          tasks={statsTasks}
           tags={tags}
           onClose={() => setStatsOpen(false)}
         />

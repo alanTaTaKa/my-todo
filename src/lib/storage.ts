@@ -15,9 +15,9 @@ function isPriority(value: unknown): value is Priority {
 }
 
 export const DEFAULT_TAGS: Tag[] = [
-  { id: 'preset-work', name: '工作', color: 'gold', createdAt: 0 },
-  { id: 'preset-life', name: '生活', color: 'sage', createdAt: 0 },
-  { id: 'preset-study', name: '学习', color: 'sky', createdAt: 0 },
+  { id: 'preset-work', name: '工作', color: 'gold', createdAt: 0, updatedAt: 0, deletedAt: null },
+  { id: 'preset-life', name: '生活', color: 'sage', createdAt: 0, updatedAt: 0, deletedAt: null },
+  { id: 'preset-study', name: '学习', color: 'sky', createdAt: 0, updatedAt: 0, deletedAt: null },
 ]
 
 const TAG_COLORS: TagColorKey[] = ['gold', 'sage', 'sky', 'rose', 'lavender', 'clay']
@@ -90,12 +90,15 @@ export function loadTags(): Tag[] | null {
       if (typeof value !== 'object' || value === null) return []
       const rawTag = value as Record<string, unknown>
       if (typeof rawTag.id !== 'string' || typeof rawTag.name !== 'string') return []
+      const createdAt = typeof rawTag.createdAt === 'number' ? rawTag.createdAt : Date.now()
       return [
         {
           id: rawTag.id,
           name: rawTag.name,
           color: isTagColor(rawTag.color) ? rawTag.color : 'gold',
-          createdAt: typeof rawTag.createdAt === 'number' ? rawTag.createdAt : Date.now(),
+          createdAt,
+          updatedAt: typeof rawTag.updatedAt === 'number' ? rawTag.updatedAt : createdAt,
+          deletedAt: typeof rawTag.deletedAt === 'number' ? rawTag.deletedAt : null,
         },
       ]
     })
