@@ -23,6 +23,7 @@ export function AuthPanel({
   const [mode, setMode] = useState<Mode>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -164,19 +165,48 @@ export function AuthPanel({
                   />
                 </label>
 
-                <label className="block">
-                  <span className="mb-1 block text-xs text-ink-soft">密码</span>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    placeholder="至少 8 位"
-                    autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
-                    minLength={8}
-                    required
-                    className="w-full rounded-xl border border-line bg-surface-2 px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink-soft/70 focus:border-gold-soft focus:bg-surface-strong"
-                  />
-                </label>
+                <div>
+                  <label
+                    htmlFor="auth-password"
+                    className="mb-1 block text-xs text-ink-soft"
+                  >
+                    密码
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="auth-password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      placeholder="至少 8 位"
+                      autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
+                      minLength={8}
+                      required
+                      className="w-full rounded-xl border border-line bg-surface-2 px-3.5 py-2.5 pr-10 text-sm text-ink outline-none transition placeholder:text-ink-soft/70 focus:border-gold-soft focus:bg-surface-strong"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      aria-label={showPassword ? '隐藏密码' : '显示密码'}
+                      title={showPassword ? '隐藏密码' : '显示密码'}
+                      className="absolute inset-y-0 right-0 grid w-10 place-items-center text-ink-soft transition hover:text-ink"
+                    >
+                      {showPassword ? (
+                        <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M3 3l18 18" />
+                          <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                          <path d="M9.9 5.2A9.6 9.6 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.1 4.2" />
+                          <path d="M6.2 6.2A17.4 17.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.1-.9" />
+                        </svg>
+                      ) : (
+                        <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                </div>
 
                 {error && (
                   <p className="rounded-xl border border-line bg-surface px-3 py-2 text-xs text-ink-soft">
