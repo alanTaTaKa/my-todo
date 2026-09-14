@@ -27,6 +27,7 @@ interface TaskInput {
   completedAt: number | null
   updatedAt: number
   deletedAt: number | null
+  purgedAt: number | null
   tagIds: string[]
 }
 
@@ -84,6 +85,7 @@ function normalizeTask(value: unknown): TaskInput | null {
     completedAt: asNumber(value.completedAt),
     updatedAt,
     deletedAt: asNumber(value.deletedAt),
+    purgedAt: asNumber(value.purgedAt),
     tagIds,
   }
 }
@@ -126,6 +128,7 @@ function toTaskDto(row: typeof tasks.$inferSelect) {
     completedAt: row.completedAt,
     updatedAt: row.updatedAt,
     deletedAt: row.deletedAt,
+    purgedAt: row.purgedAt,
     tagIds: row.tagIds,
   }
 }
@@ -203,6 +206,7 @@ syncRoutes.post('/', requireAuth, async (c) => {
             completedAt: sql`excluded.completed_at`,
             updatedAt: sql`excluded.updated_at`,
             deletedAt: sql`excluded.deleted_at`,
+            purgedAt: sql`excluded.purged_at`,
             tagIds: sql`excluded.tag_ids`,
             syncedAt: sql`excluded.synced_at`,
           },

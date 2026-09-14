@@ -6,6 +6,16 @@ export interface VersionEntry {
 
 export const VERSIONS: VersionEntry[] = [
   {
+    version: '1.4.0',
+    date: '2026-09-13',
+    highlights: [
+      '永久删除 / 清空回收站跨端同步：新增 purgedAt 墓碑，一端清空后各端回收站一并移除',
+      '换账号登录自动清空本地任务与标签、以云端为准，避免不同账号数据串号',
+      '同步改为增量推送（只推变更记录），并支持失败指数退避重试',
+      '新增离线检测与状态提示：离线时等待联网自动同步',
+    ],
+  },
+  {
     version: '1.3.0',
     date: '2026-09-13',
     highlights: [

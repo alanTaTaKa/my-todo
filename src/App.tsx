@@ -33,9 +33,10 @@ function App() {
     restoreTask,
     purgeTask,
     emptyTrash,
+    resetTasks,
     mergeTasks,
   } = useTasks()
-  const { tags, allTags, addTag, renameTag, deleteTag, mergeTags } = useTags()
+  const { tags, allTags, addTag, renameTag, deleteTag, mergeTags, resetTags } = useTags()
   const {
     themeId,
     setThemeId,
@@ -54,7 +55,15 @@ function App() {
     lastSyncedAt,
     error: syncError,
     syncNow,
-  } = useSync({ user, tasks: allTasks, tags: allTags, mergeTasks, mergeTags })
+  } = useSync({
+    user,
+    tasks: allTasks,
+    tags: allTags,
+    mergeTasks,
+    mergeTags,
+    resetTasks,
+    resetTags,
+  })
 
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<StatusFilter>('all')

@@ -93,11 +93,13 @@ export function AuthPanel({
   const syncLabel =
     syncStatus === 'syncing'
       ? '同步中…'
-      : syncStatus === 'error'
-        ? syncError ?? '同步失败'
-        : syncStatus === 'synced'
-          ? formatSyncTime(lastSyncedAt)
-          : '尚未同步'
+      : syncStatus === 'offline'
+        ? '离线，等待联网'
+        : syncStatus === 'error'
+          ? syncError ?? '同步失败'
+          : syncStatus === 'synced'
+            ? formatSyncTime(lastSyncedAt)
+            : '尚未同步'
 
   return (
     <div
@@ -155,7 +157,9 @@ export function AuthPanel({
                   <p className="mt-0.5 text-xs text-ink-soft">
                     {syncStatus === 'error'
                       ? '点击重试，本地数据不受影响'
-                      : '改动会自动同步，也可手动触发'}
+                      : syncStatus === 'offline'
+                        ? '联网后会自动同步'
+                        : '改动会自动同步，也可手动触发'}
                   </p>
                 </div>
                 <button

@@ -28,6 +28,7 @@ export interface Task {
   createdAt: number
   completedAt: number | null
   updatedAt: number
-  deletedAt: number | null
+  deletedAt: number | null    // 软删除（回收站）
+  purgedAt: number | null     // 永久删除（同步墓碑，不再展示）
   tagIds: string[]
 }

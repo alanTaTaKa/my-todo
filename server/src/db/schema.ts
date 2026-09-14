@@ -50,6 +50,7 @@ export const tasks = pgTable(
     completedAt: bigint('completed_at', { mode: 'number' }),
     updatedAt: bigint('updated_at', { mode: 'number' }).notNull(),
     deletedAt: bigint('deleted_at', { mode: 'number' }),
+    purgedAt: bigint('purged_at', { mode: 'number' }),
     tagIds: text('tag_ids')
       .array()
       .notNull()

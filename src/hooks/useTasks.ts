@@ -16,6 +16,7 @@ function sameTask(a: Task, b: Task): boolean {
     a.createdAt === b.createdAt &&
     a.completedAt === b.completedAt &&
     a.deletedAt === b.deletedAt &&
+    a.purgedAt === b.purgedAt &&
     a.tagIds.length === b.tagIds.length &&
     a.tagIds.every((id, index) => id === b.tagIds[index])
   )
@@ -43,6 +44,7 @@ export function useTasks() {
       completedAt: null,
       updatedAt: now,
       deletedAt: null,
+      purgedAt: null,
       tagIds: [],
     }
     setTasks((prev) => [task, ...prev])
@@ -110,19 +112,37 @@ export function useTasks() {
     setTasks((prev) =>
       prev.map((task) =>
         task.id === id
-          ? { ...task, deletedAt: null, updatedAt: now }
+          ? { ...task, deletedAt: null, purgedAt: null, updatedAt: now }
           : task,
       ),
     )
   }
 
   const purgeTask = (id: string) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id))
+    const now = Date.now()
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id
+          ? { ...task, purgedAt: now, updatedAt: now }
+          : task,
+      ),
+    )
   }
 
   const emptyTrash = () => {
-    setTasks((prev) => prev.filter((task) => task.deletedAt === null))
+    const now = Date.now()
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.deletedAt !== null
+          ? { ...task, purgedAt: now, updatedAt: now }
+          : task,
+      ),
+    )
   }
+
+  const resetTasks = useCallback(() => {
+    setTasks([])
+  }, [])
 
   const mergeTasks = useCallback((incoming: Task[]) => {
     setTasks((prev) => {
@@ -134,12 +154,14 @@ export function useTasks() {
     })
   }, [])
 
-  const visible = tasks.filter((task) => task.deletedAt === null)
+  const visible = tasks.filter(
+    (task) => task.deletedAt === null && task.purgedAt === null,
+  )
   const activeTasks = visible.filter((task) => !task.completed)
   const completedTasks = visible.filter((task) => task.completed)
 
   const deletedTasks = tasks
-    .filter((task) => task.deletedAt !== null)
+    .filter((task) => task.deletedAt !== null && task.purgedAt === null)
     .sort((a, b) => (b.deletedAt ?? 0) - (a.deletedAt ?? 0))
 
   return {
@@ -155,6 +177,7 @@ export function useTasks() {
     restoreTask,
     purgeTask,
     emptyTrash,
+    resetTasks,
     mergeTasks,
   }
 }

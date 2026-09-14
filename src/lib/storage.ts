@@ -7,6 +7,7 @@ const TAGS_KEY = 'todo-app:tags'
 const CUSTOM_PALETTE_KEY = 'todo-app:custom-theme'
 const CUSTOM_CSS_KEY = 'todo-app:custom-theme-css'
 const SAVED_PALETTES_KEY = 'todo-app:custom-palettes'
+const ACTIVE_SYNC_USER_KEY = 'todo-app:sync-user'
 
 const PRIORITIES: Priority[] = ['none', 'low', 'medium', 'high']
 
@@ -51,6 +52,7 @@ function normalizeTask(value: unknown): Task | null {
           : null,
     updatedAt,
     deletedAt: typeof raw.deletedAt === 'number' ? raw.deletedAt : null,
+    purgedAt: typeof raw.purgedAt === 'number' ? raw.purgedAt : null,
     tagIds: Array.isArray(raw.tagIds)
       ? raw.tagIds.filter((id): id is string => typeof id === 'string')
       : [],
@@ -201,6 +203,26 @@ export function loadSavedPalettes(): CustomPalette[] {
 export function saveSavedPalettes(palettes: CustomPalette[]): void {
   try {
     localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify(palettes))
+  } catch {
+    // 忽略写入失败
+  }
+}
+
+export function loadActiveSyncUser(): string | null {
+  try {
+    return localStorage.getItem(ACTIVE_SYNC_USER_KEY)
+  } catch {
+    return null
+  }
+}
+
+export function saveActiveSyncUser(userId: string | null): void {
+  try {
+    if (userId) {
+      localStorage.setItem(ACTIVE_SYNC_USER_KEY, userId)
+    } else {
+      localStorage.removeItem(ACTIVE_SYNC_USER_KEY)
+    }
   } catch {
     // 忽略写入失败
   }

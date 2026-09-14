@@ -69,6 +69,10 @@ export function useTags() {
     setTags((prev) => mergeById(prev, incoming, sameTag))
   }, [])
 
+  const resetTags = useCallback(() => {
+    setTags([])
+  }, [])
+
   const visibleTags = tags.filter((tag) => tag.deletedAt === null)
 
   return {
@@ -78,5 +82,6 @@ export function useTags() {
     renameTag,
     deleteTag,
     mergeTags,
+    resetTags,
   }
 }

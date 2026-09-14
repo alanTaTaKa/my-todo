@@ -15,6 +15,13 @@
       "when": 1789314354387,
       "tag": "0001_tasks_tags_sync",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789395784934,
+      "tag": "0002_task_purged_at",
+      "breakpoints": true
     }
   ]
 }

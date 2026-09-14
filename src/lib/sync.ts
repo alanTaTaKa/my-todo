@@ -1,6 +1,6 @@
 import type { Tag, Task } from '../types'
 
-export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'error'
+export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'error' | 'offline'
 
 export interface SyncResponse {
   serverTime: number
