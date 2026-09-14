@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import type { CustomPalette } from '../lib/palettes'
+import type { CustomPalette, SavedPalette } from '../lib/palettes'
 
 interface SavedPalettesProps {
-  palettes: CustomPalette[]
+  palettes: SavedPalette[]
   activeId: string | null
   onSelect: (palette: CustomPalette) => void
   onRename: (id: string, name: string) => void

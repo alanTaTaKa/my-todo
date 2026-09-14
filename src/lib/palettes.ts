@@ -5,6 +5,12 @@ export interface CustomPalette {
   colors: string[]
 }
 
+export interface SavedPalette extends CustomPalette {
+  createdAt: number
+  updatedAt: number
+  deletedAt: number | null
+}
+
 export const DUAL_PALETTES: CustomPalette[] = [
   { id: 'deep-sea', name: '深海蓝', mode: 'dual', colors: ['#122E8A', '#F5EFEA'] },
   { id: 'charcoal-pink', name: '炭黑粉', mode: 'dual', colors: ['#1A1A1D', '#E6397C'] },

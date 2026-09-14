@@ -1,4 +1,5 @@
-import type { Tag, Task } from '../types'
+import type { Tag, Task, UserProfile } from '../types'
+import type { SavedPalette } from './palettes'
 
 export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'error' | 'offline'
 
@@ -6,6 +7,8 @@ export interface SyncResponse {
   serverTime: number
   tasks: Task[]
   tags: Tag[]
+  palettes: SavedPalette[]
+  profile: UserProfile | null
 }
 
 async function request(path: string, init?: RequestInit): Promise<SyncResponse> {
@@ -48,6 +51,8 @@ export function pullSync(since: number): Promise<SyncResponse> {
 export function pushSync(payload: {
   tasks: Task[]
   tags: Tag[]
+  palettes: SavedPalette[]
+  profile: UserProfile
 }): Promise<SyncResponse> {
   return request('/api/sync', {
     method: 'POST',

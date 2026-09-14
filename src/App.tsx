@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { AppHeader } from './components/AppHeader'
 import { AuthPanel } from './components/AuthPanel'
+import { FeedbackPanel } from './components/FeedbackPanel'
 import { FilterBar } from './components/FilterBar'
 import { Pagination } from './components/Pagination'
 import { RecycleBin } from './components/RecycleBin'
@@ -10,6 +12,7 @@ import { TaskItem } from './components/TaskItem'
 import { ThemePanel } from './components/ThemePanel'
 import { VersionPanel } from './components/VersionPanel'
 import { useAuth } from './hooks/useAuth'
+import { useProfile } from './hooks/useProfile'
 import { useSync } from './hooks/useSync'
 import { useTags } from './hooks/useTags'
 import { useTasks } from './hooks/useTasks'
@@ -33,6 +36,7 @@ function App() {
     restoreTask,
     purgeTask,
     emptyTrash,
+    deleteAllTasks,
     resetTasks,
     mergeTasks,
   } = useTasks()
@@ -43,12 +47,24 @@ function App() {
     customPalette,
     applyCustomTheme,
     savedPalettes,
+    allPalettes,
     addSavedPalette,
     renameSavedPalette,
     deleteSavedPalette,
+    mergePalettes,
+    resetPalettes,
   } = useTheme()
 
   const { user, loading: authLoading, register, login, logout } = useAuth()
+
+  const {
+    title: profileTitle,
+    subtitle: profileSubtitle,
+    profile,
+    updateProfile,
+    mergeProfile,
+    resetProfile,
+  } = useProfile()
 
   const {
     status: syncStatus,
@@ -59,10 +75,16 @@ function App() {
     user,
     tasks: allTasks,
     tags: allTags,
+    palettes: allPalettes,
+    profile,
     mergeTasks,
     mergeTags,
+    mergePalettes,
+    mergeProfile,
     resetTasks,
     resetTags,
+    resetPalettes,
+    resetProfile,
   })
 
   const [query, setQuery] = useState('')
@@ -77,6 +99,7 @@ function App() {
   const [versionOpen, setVersionOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -99,6 +122,15 @@ function App() {
     deleteTag(id)
     detachTag(id)
     if (activeTagId === id) setActiveTagId(null)
+  }
+
+  const handleDeleteAll = () => {
+    if (activeTasks.length + completedTasks.length === 0) return
+    if (
+      window.confirm('确定要把所有任务移到回收站吗？之后可在回收站恢复。')
+    ) {
+      deleteAllTasks()
+    }
   }
 
   const handleSortKeyChange = (key: SortKey) => {
@@ -143,11 +175,11 @@ function App() {
   return (
     <div className="min-h-screen px-4 py-10 sm:py-16">
       <div className="mx-auto w-full max-w-xl">
-        <header className="mb-8 text-center">
-          <p className="text-xs tracking-[0.35em] text-ink-soft/80">DAILY CALM</p>
-          <h1 className="mt-3 text-3xl font-semibold text-ink sm:text-4xl">今日待办</h1>
-          <p className="mt-2 text-sm text-ink-soft">慢慢来，一件一件完成就好</p>
-        </header>
+        <AppHeader
+          title={profileTitle}
+          subtitle={profileSubtitle}
+          onChange={updateProfile}
+        />
 
         <div className="rounded-3xl border border-line bg-surface p-4 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.5)] backdrop-blur-xl sm:p-6">
           <TaskInput onAdd={addTask} />
@@ -240,9 +272,9 @@ function App() {
 
         <div className="mt-6 flex flex-col items-center gap-3">
           <p className="text-center text-xs text-ink-soft/70">
-            双击任务即可编辑 · 数据保存在本机
+            双击任务即可编辑 · 数据保存在本机，登录后云端同步
           </p>
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
             <button
               type="button"
               onClick={() => setStatsOpen(true)}
@@ -293,12 +325,38 @@ function App() {
             </button>
             <button
               type="button"
+              onClick={() => setFeedbackOpen(true)}
+              className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-ink-soft transition hover:text-ink"
+            >
+              <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 14a3 3 0 0 1-3 3H8l-5 4V5a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3Z" />
+                <path d="M8 9h8M8 12.5h5" />
+              </svg>
+              反馈
+            </button>
+            <button
+              type="button"
               onClick={() => setVersionOpen(true)}
               aria-label={`当前版本 v${CURRENT_VERSION}，查看更新内容`}
               className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-ink-soft transition hover:text-ink"
             >
               v{CURRENT_VERSION}
             </button>
+            {activeTasks.length + completedTasks.length > 0 && (
+              <button
+                type="button"
+                onClick={handleDeleteAll}
+                className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-ink-soft transition hover:border-red-500/30 hover:text-red-500"
+              >
+                <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4h8v2" />
+                  <path d="M19 6l-1 14H6L5 6" />
+                  <path d="M10 11v6M14 11v6" />
+                </svg>
+                全部删除
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -334,6 +392,10 @@ function App() {
           onSync={syncNow}
           onClose={() => setAccountOpen(false)}
         />
+      )}
+
+      {feedbackOpen && (
+        <FeedbackPanel onClose={() => setFeedbackOpen(false)} />
       )}
 
       {statsOpen && (

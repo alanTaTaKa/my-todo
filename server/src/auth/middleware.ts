@@ -17,15 +17,7 @@ export interface AuthVariables {
   user: AuthUser
 }
 
-export const requireAuth: MiddlewareHandler<{ Variables: AuthVariables }> = async (
-  c,
-  next,
-) => {
-  const token = getCookie(c, SESSION_COOKIE)
-  if (!token) {
-    return c.json({ error: '未登录' }, 401)
-  }
-
+async function findUserByToken(token: string): Promise<AuthUser | null> {
   const rows = await db
     .select({
       id: users.id,
@@ -42,12 +34,40 @@ export const requireAuth: MiddlewareHandler<{ Variables: AuthVariables }> = asyn
     )
     .limit(1)
 
-  const user = rows[0]
+  return rows[0] ?? null
+}
+
+export const requireAuth: MiddlewareHandler<{ Variables: AuthVariables }> = async (
+  c,
+  next,
+) => {
+  const token = getCookie(c, SESSION_COOKIE)
+  if (!token) {
+    return c.json({ error: '未登录' }, 401)
+  }
+
+  const user = await findUserByToken(token)
   if (!user) {
     return c.json({ error: '登录状态已失效，请重新登录' }, 401)
   }
 
   c.set('user', user)
+  await next()
+  return undefined
+}
+
+export const optionalAuth: MiddlewareHandler<{ Variables: AuthVariables }> = async (
+  c,
+  next,
+) => {
+  const token = getCookie(c, SESSION_COOKIE)
+  if (token) {
+    const user = await findUserByToken(token)
+    if (user) {
+      c.set('user', user)
+    }
+  }
+
   await next()
   return undefined
 }

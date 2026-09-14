@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { authRoutes } from './auth/routes.js'
+import { feedbackRoutes } from './feedback/routes.js'
 import { syncRoutes } from './sync/routes.js'
 import type { AuthVariables } from './auth/middleware.js'
 import { env } from './env.js'
@@ -23,6 +24,7 @@ app.use(
 app.get('/api/health', (c) => c.json({ ok: true }))
 app.route('/api/auth', authRoutes)
 app.route('/api/sync', syncRoutes)
+app.route('/api/feedback', feedbackRoutes)
 
 app.notFound((c) => c.json({ error: '接口不存在' }, 404))
 app.onError((error, c) => {

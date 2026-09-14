@@ -1,7 +1,7 @@
 import { and, eq, gt, inArray, sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { db } from '../db/index.js'
-import { tags, tasks } from '../db/schema.js'
+import { palettes, profiles, tags, tasks } from '../db/schema.js'
 import { requireAuth, type AuthVariables } from '../auth/middleware.js'
 
 const syncRoutes = new Hono<{ Variables: AuthVariables }>()
@@ -13,6 +13,7 @@ const MAX_ID_LENGTH = 100
 const MAX_TITLE_LENGTH = 500
 const MAX_TAG_NAME_LENGTH = 60
 const SYNC_OVERLAP_MS = 2000
+const HEX_PATTERN = /^#[0-9a-fA-F]{6}$/
 
 type Priority = (typeof PRIORITIES)[number]
 type Color = (typeof COLORS)[number]
@@ -38,6 +39,22 @@ interface TagInput {
   createdAt: number
   updatedAt: number
   deletedAt: number | null
+}
+
+interface PaletteInput {
+  id: string
+  name: string
+  mode: 'dual' | 'tri'
+  colors: string[]
+  createdAt: number
+  updatedAt: number
+  deletedAt: number | null
+}
+
+interface ProfileInput {
+  title: string
+  subtitle: string
+  updatedAt: number
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -117,6 +134,52 @@ function normalizeTag(value: unknown): TagInput | null {
   }
 }
 
+function normalizePalette(value: unknown): PaletteInput | null {
+  if (!isObject(value)) return null
+
+  const id = typeof value.id === 'string' ? value.id.trim() : ''
+  const name = typeof value.name === 'string' ? value.name.trim() : ''
+  if (!id || id.length > MAX_ID_LENGTH) return null
+  if (!name || name.length > MAX_TAG_NAME_LENGTH) return null
+
+  const createdAt = asNumber(value.createdAt)
+  if (createdAt === null || createdAt < 0) return null
+  const updatedAt = asNumber(value.updatedAt) ?? createdAt
+
+  const rawColors = Array.isArray(value.colors) ? value.colors : []
+  const colors = rawColors
+    .filter(
+      (color): color is string =>
+        typeof color === 'string' && HEX_PATTERN.test(color.trim()),
+    )
+    .map((color) => color.trim().toLowerCase())
+    .slice(0, 3)
+  if (colors.length < 2) return null
+
+  return {
+    id,
+    name,
+    mode: colors.length === 3 ? 'tri' : 'dual',
+    colors,
+    createdAt,
+    updatedAt,
+    deletedAt: asNumber(value.deletedAt),
+  }
+}
+
+function normalizeProfile(value: unknown): ProfileInput | null {
+  if (!isObject(value)) return null
+
+  const title = typeof value.title === 'string' ? value.title.trim() : ''
+  const subtitle = typeof value.subtitle === 'string' ? value.subtitle.trim() : ''
+  if (!title || title.length > 60 || subtitle.length > 120) return null
+
+  const updatedAt = asNumber(value.updatedAt)
+  if (updatedAt === null || updatedAt < 0) return null
+
+  return { title, subtitle, updatedAt }
+}
+
 function toTaskDto(row: typeof tasks.$inferSelect) {
   return {
     id: row.id,
@@ -144,6 +207,26 @@ function toTagDto(row: typeof tags.$inferSelect) {
   }
 }
 
+function toPaletteDto(row: typeof palettes.$inferSelect) {
+  return {
+    id: row.id,
+    name: row.name,
+    mode: row.mode,
+    colors: row.colors,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    deletedAt: row.deletedAt,
+  }
+}
+
+function toProfileDto(row: typeof profiles.$inferSelect) {
+  return {
+    title: row.title,
+    subtitle: row.subtitle,
+    updatedAt: row.updatedAt,
+  }
+}
+
 syncRoutes.get('/', requireAuth, async (c) => {
   const user = c.get('user')
   const requested = Number(c.req.query('since'))
@@ -161,10 +244,23 @@ syncRoutes.get('/', requireAuth, async (c) => {
     .from(tags)
     .where(and(eq(tags.userId, user.id), gt(tags.syncedAt, lowerBound)))
 
+  const paletteRows = await db
+    .select()
+    .from(palettes)
+    .where(and(eq(palettes.userId, user.id), gt(palettes.syncedAt, lowerBound)))
+
+  const profileRows = await db
+    .select()
+    .from(profiles)
+    .where(and(eq(profiles.userId, user.id), gt(profiles.syncedAt, lowerBound)))
+    .limit(1)
+
   return c.json({
     serverTime,
     tasks: taskRows.map(toTaskDto),
     tags: tagRows.map(toTagDto),
+    palettes: paletteRows.map(toPaletteDto),
+    profile: profileRows[0] ? toProfileDto(profileRows[0]) : null,
   })
 })
 
@@ -177,7 +273,12 @@ syncRoutes.post('/', requireAuth, async (c) => {
 
   const rawTasks = Array.isArray(body.tasks) ? body.tasks : []
   const rawTags = Array.isArray(body.tags) ? body.tags : []
-  if (rawTasks.length > MAX_RECORDS || rawTags.length > MAX_RECORDS) {
+  const rawPalettes = Array.isArray(body.palettes) ? body.palettes : []
+  if (
+    rawTasks.length > MAX_RECORDS ||
+    rawTags.length > MAX_RECORDS ||
+    rawPalettes.length > MAX_RECORDS
+  ) {
     return c.json({ error: '单次同步数据量过大' }, 413)
   }
 
@@ -187,6 +288,10 @@ syncRoutes.post('/', requireAuth, async (c) => {
   const tagInputs = rawTags
     .map(normalizeTag)
     .filter((tag): tag is TagInput => tag !== null)
+  const paletteInputs = rawPalettes
+    .map(normalizePalette)
+    .filter((palette): palette is PaletteInput => palette !== null)
+  const profileInput = isObject(body.profile) ? normalizeProfile(body.profile) : null
 
   const serverTime = Date.now()
 
@@ -231,10 +336,52 @@ syncRoutes.post('/', requireAuth, async (c) => {
           setWhere: sql`excluded.updated_at > ${tags.updatedAt}`,
         })
     }
+
+    if (paletteInputs.length > 0) {
+      await tx
+        .insert(palettes)
+        .values(
+          paletteInputs.map((palette) => ({
+            ...palette,
+            userId: user.id,
+            syncedAt: serverTime,
+          })),
+        )
+        .onConflictDoUpdate({
+          target: [palettes.userId, palettes.id],
+          set: {
+            name: sql`excluded.name`,
+            mode: sql`excluded.mode`,
+            colors: sql`excluded.colors`,
+            createdAt: sql`excluded.created_at`,
+            updatedAt: sql`excluded.updated_at`,
+            deletedAt: sql`excluded.deleted_at`,
+            syncedAt: sql`excluded.synced_at`,
+          },
+          setWhere: sql`excluded.updated_at > ${palettes.updatedAt}`,
+        })
+    }
+
+    if (profileInput) {
+      await tx
+        .insert(profiles)
+        .values({ ...profileInput, userId: user.id, syncedAt: serverTime })
+        .onConflictDoUpdate({
+          target: profiles.userId,
+          set: {
+            title: sql`excluded.title`,
+            subtitle: sql`excluded.subtitle`,
+            updatedAt: sql`excluded.updated_at`,
+            syncedAt: sql`excluded.synced_at`,
+          },
+          setWhere: sql`excluded.updated_at > ${profiles.updatedAt}`,
+        })
+    }
   })
 
   const taskIds = taskInputs.map((task) => task.id)
   const tagIds = tagInputs.map((tag) => tag.id)
+  const paletteIds = paletteInputs.map((palette) => palette.id)
 
   const authoritativeTasks =
     taskIds.length > 0
@@ -252,10 +399,25 @@ syncRoutes.post('/', requireAuth, async (c) => {
           .where(and(eq(tags.userId, user.id), inArray(tags.id, tagIds)))
       : []
 
+  const authoritativePalettes =
+    paletteIds.length > 0
+      ? await db
+          .select()
+          .from(palettes)
+          .where(and(eq(palettes.userId, user.id), inArray(palettes.id, paletteIds)))
+      : []
+
+  const authoritativeProfile = profileInput
+    ? ((await db.select().from(profiles).where(eq(profiles.userId, user.id)).limit(1))[0] ??
+      null)
+    : null
+
   return c.json({
     serverTime,
     tasks: authoritativeTasks.map(toTaskDto),
     tags: authoritativeTags.map(toTagDto),
+    palettes: authoritativePalettes.map(toPaletteDto),
+    profile: authoritativeProfile ? toProfileDto(authoritativeProfile) : null,
   })
 })
 

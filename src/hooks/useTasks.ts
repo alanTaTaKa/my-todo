@@ -140,6 +140,17 @@ export function useTasks() {
     )
   }
 
+  const deleteAllTasks = () => {
+    const now = Date.now()
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.deletedAt === null && task.purgedAt === null
+          ? { ...task, deletedAt: now, updatedAt: now }
+          : task,
+      ),
+    )
+  }
+
   const resetTasks = useCallback(() => {
     setTasks([])
   }, [])
@@ -177,6 +188,7 @@ export function useTasks() {
     restoreTask,
     purgeTask,
     emptyTrash,
+    deleteAllTasks,
     resetTasks,
     mergeTasks,
   }

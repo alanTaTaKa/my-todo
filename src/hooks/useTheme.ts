@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { resolveTheme, type ThemeId } from '../lib/themes'
-import type { CustomPalette } from '../lib/palettes'
+import type { CustomPalette, SavedPalette } from '../lib/palettes'
 import { buildCustomThemeCss, deriveCustomTheme } from '../lib/customTheme'
+import { mergeById } from '../lib/merge'
 import {
   loadCustomPalette,
   loadSavedPalettes,
@@ -14,12 +15,23 @@ import {
 
 const CUSTOM_STYLE_ID = 'custom-theme-style'
 
+function samePalette(a: SavedPalette, b: SavedPalette): boolean {
+  return (
+    a.name === b.name &&
+    a.mode === b.mode &&
+    a.createdAt === b.createdAt &&
+    a.deletedAt === b.deletedAt &&
+    a.colors.length === b.colors.length &&
+    a.colors.every((color, index) => color === b.colors[index])
+  )
+}
+
 export function useTheme() {
   const [themeId, setThemeId] = useState<ThemeId>(() => loadThemeId())
   const [customPalette, setCustomPalette] = useState<CustomPalette | null>(() =>
     loadCustomPalette(),
   )
-  const [savedPalettes, setSavedPalettes] = useState<CustomPalette[]>(() =>
+  const [savedPalettes, setSavedPalettes] = useState<SavedPalette[]>(() =>
     loadSavedPalettes(),
   )
 
@@ -69,12 +81,19 @@ export function useTheme() {
   const addSavedPalette = (input: {
     mode: 'dual' | 'tri'
     colors: string[]
-  }): CustomPalette => {
-    const palette: CustomPalette = {
+  }): SavedPalette => {
+    const now = Date.now()
+    const visibleCount = savedPalettes.filter(
+      (palette) => palette.deletedAt === null,
+    ).length
+    const palette: SavedPalette = {
       id: crypto.randomUUID(),
-      name: `我的配色 ${savedPalettes.length + 1}`,
+      name: `我的配色 ${visibleCount + 1}`,
       mode: input.mode,
       colors: input.colors,
+      createdAt: now,
+      updatedAt: now,
+      deletedAt: null,
     }
     setSavedPalettes((prev) => [...prev, palette])
     return palette
@@ -83,9 +102,10 @@ export function useTheme() {
   const renameSavedPalette = (id: string, name: string) => {
     const trimmed = name.trim()
     if (!trimmed) return
+    const now = Date.now()
     setSavedPalettes((prev) =>
       prev.map((palette) =>
-        palette.id === id ? { ...palette, name: trimmed } : palette,
+        palette.id === id ? { ...palette, name: trimmed, updatedAt: now } : palette,
       ),
     )
     setCustomPalette((prev) =>
@@ -94,17 +114,37 @@ export function useTheme() {
   }
 
   const deleteSavedPalette = (id: string) => {
-    setSavedPalettes((prev) => prev.filter((palette) => palette.id !== id))
+    const now = Date.now()
+    setSavedPalettes((prev) =>
+      prev.map((palette) =>
+        palette.id === id && palette.deletedAt === null
+          ? { ...palette, deletedAt: now, updatedAt: now }
+          : palette,
+      ),
+    )
   }
+
+  const mergePalettes = useCallback((incoming: SavedPalette[]) => {
+    setSavedPalettes((prev) => mergeById(prev, incoming, samePalette))
+  }, [])
+
+  const resetPalettes = useCallback(() => {
+    setSavedPalettes([])
+  }, [])
+
+  const visiblePalettes = savedPalettes.filter((palette) => palette.deletedAt === null)
 
   return {
     themeId,
     setThemeId,
     customPalette,
     applyCustomTheme,
-    savedPalettes,
+    savedPalettes: visiblePalettes,
+    allPalettes: savedPalettes,
     addSavedPalette,
     renameSavedPalette,
     deleteSavedPalette,
+    mergePalettes,
+    resetPalettes,
   }
 }

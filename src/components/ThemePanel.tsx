@@ -4,6 +4,7 @@ import {
   DUAL_PALETTES,
   TRI_PALETTES,
   type CustomPalette,
+  type SavedPalette,
 } from '../lib/palettes'
 import { normalizeHex } from '../lib/color'
 import { useDraggable } from '../hooks/useDraggable'
@@ -14,13 +15,13 @@ const USER_PALETTE_ID = 'user-custom'
 interface ThemePanelProps {
   themeId: ThemeId
   customPalette: CustomPalette | null
-  savedPalettes: CustomPalette[]
+  savedPalettes: SavedPalette[]
   onSelect: (id: ThemeId) => void
   onSelectCustom: (palette: CustomPalette) => void
   onAddSavedPalette: (input: {
     mode: 'dual' | 'tri'
     colors: string[]
-  }) => CustomPalette
+  }) => SavedPalette
   onRenameSavedPalette: (id: string, name: string) => void
   onDeleteSavedPalette: (id: string) => void
   onClose: () => void

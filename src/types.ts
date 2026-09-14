@@ -19,6 +19,12 @@ export interface Tag {
   deletedAt: number | null
 }
 
+export interface UserProfile {
+  title: string
+  subtitle: string
+  updatedAt: number
+}
+
 export interface Task {
   id: string
   title: string

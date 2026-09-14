@@ -82,3 +82,46 @@ export const tags = pgTable(
     index('tags_user_synced_idx').on(table.userId, table.syncedAt),
   ],
 )
+
+export const palettes = pgTable(
+  'palettes',
+  {
+    id: text('id').notNull(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    mode: text('mode').notNull().default('dual'),
+    colors: text('colors').array().notNull(),
+    createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+    updatedAt: bigint('updated_at', { mode: 'number' }).notNull(),
+    deletedAt: bigint('deleted_at', { mode: 'number' }),
+    syncedAt: bigint('synced_at', { mode: 'number' }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.id] }),
+    index('palettes_user_synced_idx').on(table.userId, table.syncedAt),
+  ],
+)
+
+export const profiles = pgTable('profiles', {
+  userId: uuid('user_id')
+    .primaryKey()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  subtitle: text('subtitle').notNull(),
+  updatedAt: bigint('updated_at', { mode: 'number' }).notNull(),
+  syncedAt: bigint('synced_at', { mode: 'number' }).notNull(),
+})
+
+export const feedback = pgTable(
+  'feedback',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+    content: text('content').notNull(),
+    contact: text('contact'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('feedback_created_at_idx').on(table.createdAt)],
+)

@@ -1,5 +1,5 @@
-import type { Priority, Tag, TagColorKey, Task } from '../types'
-import type { CustomPalette } from './palettes'
+import type { Priority, Tag, TagColorKey, Task, UserProfile } from '../types'
+import type { CustomPalette, SavedPalette } from './palettes'
 import { DEFAULT_THEME, THEME_IDS, THEME_STORAGE_KEY, type ThemeId } from './themes'
 
 const TASKS_KEY = 'todo-app:tasks'
@@ -8,6 +8,7 @@ const CUSTOM_PALETTE_KEY = 'todo-app:custom-theme'
 const CUSTOM_CSS_KEY = 'todo-app:custom-theme-css'
 const SAVED_PALETTES_KEY = 'todo-app:custom-palettes'
 const ACTIVE_SYNC_USER_KEY = 'todo-app:sync-user'
+const PROFILE_KEY = 'todo-app:profile'
 
 const PRIORITIES: Priority[] = ['none', 'low', 'medium', 'high']
 
@@ -185,14 +186,27 @@ function normalizePalette(value: unknown): CustomPalette | null {
   }
 }
 
-export function loadSavedPalettes(): CustomPalette[] {
+function normalizeSavedPalette(value: unknown): SavedPalette | null {
+  const palette = normalizePalette(value)
+  if (!palette) return null
+
+  const raw = value as Partial<SavedPalette>
+  return {
+    ...palette,
+    createdAt: typeof raw.createdAt === 'number' ? raw.createdAt : 0,
+    updatedAt: typeof raw.updatedAt === 'number' ? raw.updatedAt : 0,
+    deletedAt: typeof raw.deletedAt === 'number' ? raw.deletedAt : null,
+  }
+}
+
+export function loadSavedPalettes(): SavedPalette[] {
   try {
     const raw = localStorage.getItem(SAVED_PALETTES_KEY)
     if (!raw) return []
     const parsed: unknown = JSON.parse(raw)
     if (!Array.isArray(parsed)) return []
-    return parsed.flatMap((value): CustomPalette[] => {
-      const palette = normalizePalette(value)
+    return parsed.flatMap((value): SavedPalette[] => {
+      const palette = normalizeSavedPalette(value)
       return palette ? [palette] : []
     })
   } catch {
@@ -200,7 +214,7 @@ export function loadSavedPalettes(): CustomPalette[] {
   }
 }
 
-export function saveSavedPalettes(palettes: CustomPalette[]): void {
+export function saveSavedPalettes(palettes: SavedPalette[]): void {
   try {
     localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify(palettes))
   } catch {
@@ -223,6 +237,34 @@ export function saveActiveSyncUser(userId: string | null): void {
     } else {
       localStorage.removeItem(ACTIVE_SYNC_USER_KEY)
     }
+  } catch {
+    // 忽略写入失败
+  }
+}
+
+export function loadProfile(): UserProfile | null {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY)
+    if (!raw) return null
+    const parsed: unknown = JSON.parse(raw)
+    if (typeof parsed !== 'object' || parsed === null) return null
+    const value = parsed as Partial<UserProfile>
+    if (typeof value.title !== 'string' || typeof value.subtitle !== 'string') {
+      return null
+    }
+    return {
+      title: value.title,
+      subtitle: value.subtitle,
+      updatedAt: typeof value.updatedAt === 'number' ? value.updatedAt : 0,
+    }
+  } catch {
+    return null
+  }
+}
+
+export function saveProfile(profile: UserProfile): void {
+  try {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile))
   } catch {
     // 忽略写入失败
   }
