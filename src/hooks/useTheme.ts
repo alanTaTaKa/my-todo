@@ -15,6 +15,21 @@ import {
 
 const CUSTOM_STYLE_ID = 'custom-theme-style'
 
+function syncThemeColor() {
+  const color = getComputedStyle(document.documentElement)
+    .getPropertyValue('--bg-base')
+    .trim()
+  if (!color) return
+
+  let meta = document.querySelector('meta[name="theme-color"]')
+  if (!meta) {
+    meta = document.createElement('meta')
+    meta.setAttribute('name', 'theme-color')
+    document.head.appendChild(meta)
+  }
+  meta.setAttribute('content', color)
+}
+
 function samePalette(a: SavedPalette, b: SavedPalette): boolean {
   return (
     a.name === b.name &&
@@ -57,11 +72,13 @@ export function useTheme() {
       document.head.appendChild(style)
     }
     style.textContent = css
+    syncThemeColor()
   }, [customPalette])
 
   useEffect(() => {
     const apply = () => {
       document.documentElement.dataset.theme = resolveTheme(themeId)
+      syncThemeColor()
     }
     apply()
 
