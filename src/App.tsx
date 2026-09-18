@@ -55,7 +55,8 @@ function App() {
     resetPalettes,
   } = useTheme()
 
-  const { user, loading: authLoading, register, login, logout } = useAuth()
+  const { user, loading: authLoading, register, login, logout, deleteAccount } =
+    useAuth()
 
   const {
     title: profileTitle,
@@ -389,6 +390,7 @@ function App() {
           onLogin={login}
           onRegister={register}
           onLogout={logout}
+          onDeleteAccount={deleteAccount}
           onSync={syncNow}
           onClose={() => setAccountOpen(false)}
         />

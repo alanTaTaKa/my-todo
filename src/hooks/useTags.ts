@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Tag, TagColorKey } from '../types'
 import { DEFAULT_TAGS, loadTags, saveTags } from '../lib/storage'
 import { mergeById } from '../lib/merge'
@@ -19,7 +19,7 @@ export function useTags() {
     saveTags(tags)
   }, [tags])
 
-  const addTag = (name: string, color: TagColorKey) => {
+  const addTag = useCallback((name: string, color: TagColorKey) => {
     const trimmed = name.trim()
     if (!trimmed) return
 
@@ -38,9 +38,9 @@ export function useTags() {
         },
       ]
     })
-  }
+  }, [])
 
-  const renameTag = (id: string, name: string) => {
+  const renameTag = useCallback((id: string, name: string) => {
     const trimmed = name.trim()
     if (!trimmed) return
 
@@ -52,9 +52,9 @@ export function useTags() {
         tag.id === id ? { ...tag, name: trimmed, updatedAt: Date.now() } : tag,
       )
     })
-  }
+  }, [])
 
-  const deleteTag = (id: string) => {
+  const deleteTag = useCallback((id: string) => {
     const now = Date.now()
     setTags((prev) =>
       prev.map((tag) =>
@@ -63,7 +63,7 @@ export function useTags() {
           : tag,
       ),
     )
-  }
+  }, [])
 
   const mergeTags = useCallback((incoming: Tag[]) => {
     setTags((prev) => mergeById(prev, incoming, sameTag))
@@ -73,7 +73,10 @@ export function useTags() {
     setTags([])
   }, [])
 
-  const visibleTags = tags.filter((tag) => tag.deletedAt === null)
+  const visibleTags = useMemo(
+    () => tags.filter((tag) => tag.deletedAt === null),
+    [tags],
+  )
 
   return {
     tags: visibleTags,

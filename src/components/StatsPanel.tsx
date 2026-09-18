@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { Tag, Task } from '../types'
 import { matchesDateFilter } from '../lib/date'
 import { getTagPalette } from '../lib/tags'
+import { Modal } from './Modal'
 
 interface StatsPanelProps {
   tasks: Task[]
@@ -11,14 +12,6 @@ interface StatsPanelProps {
 
 export function StatsPanel({ tasks, tags, onClose }: StatsPanelProps) {
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null)
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
 
   const effectiveTagId =
     selectedTagId !== null && tags.some((tag) => tag.id === selectedTagId)
@@ -41,37 +34,18 @@ export function StatsPanel({ tasks, tags, onClose }: StatsPanelProps) {
   ).length
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-overlay p-0 sm:items-center sm:p-4"
-      onClick={onClose}
-      role="presentation"
+    <Modal
+      label="数据统计"
+      onClose={onClose}
+      size="lg"
+      header={
+        <>
+          <h2 className="text-base font-semibold text-ink">数据统计</h2>
+          <p className="mt-0.5 text-xs text-ink-soft">按标签维度查看</p>
+        </>
+      }
     >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="数据统计"
-        className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-t-3xl border border-line bg-cream/95 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.6)] sm:rounded-3xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-center justify-between border-b border-line px-5 py-4">
-          <div>
-            <h2 className="text-base font-semibold text-ink">数据统计</h2>
-            <p className="mt-0.5 text-xs text-ink-soft">按标签维度查看</p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="关闭统计"
-            className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
-          >
-            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+      <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
             <TagTab
               active={effectiveTagId === null}
               onClick={() => setSelectedTagId(null)}
@@ -97,22 +71,20 @@ export function StatsPanel({ tasks, tags, onClose }: StatsPanelProps) {
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-2.5">
-            <StatCard label="任务总数" value={total} accent="#8a7f70" />
+            <StatCard label="任务总数" value={total} accent="var(--color-ink-soft)" />
             <StatCard
               label="已完成"
               value={completed}
               accent="var(--color-sage-text)"
             />
-            <StatCard label="今日到期" value={dueToday} accent="#b8842a" />
+            <StatCard label="今日到期" value={dueToday} accent="var(--color-gold)" />
             <StatCard label="逾期" value={overdue} accent="#c25b5b" />
           </div>
 
           <p className="mt-4 text-center text-[11px] text-ink-soft/70">
             统计不含回收站，不受搜索与筛选影响
           </p>
-        </div>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -168,7 +140,7 @@ function ProgressRing({ value }: { value: number }) {
           cy="50"
           r={radius}
           fill="none"
-          stroke="#d9a441"
+          stroke="var(--color-gold)"
           strokeWidth="8"
           strokeLinecap="round"
           strokeDasharray={circumference}

@@ -10,7 +10,7 @@ const PRIORITIES = ['none', 'low', 'medium', 'high'] as const
 const COLORS = ['gold', 'sage', 'sky', 'rose', 'lavender', 'clay'] as const
 const MAX_RECORDS = 2000
 const MAX_ID_LENGTH = 100
-const MAX_TITLE_LENGTH = 500
+const MAX_TITLE_LENGTH = 200
 const MAX_TAG_NAME_LENGTH = 60
 const SYNC_OVERLAP_MS = 2000
 const HEX_PATTERN = /^#[0-9a-fA-F]{6}$/
@@ -315,7 +315,7 @@ syncRoutes.post('/', requireAuth, async (c) => {
             tagIds: sql`excluded.tag_ids`,
             syncedAt: sql`excluded.synced_at`,
           },
-          setWhere: sql`excluded.updated_at > ${tasks.updatedAt}`,
+          setWhere: sql`${tasks.purgedAt} IS NULL AND excluded.updated_at > ${tasks.updatedAt}`,
         })
     }
 
@@ -333,7 +333,7 @@ syncRoutes.post('/', requireAuth, async (c) => {
             deletedAt: sql`excluded.deleted_at`,
             syncedAt: sql`excluded.synced_at`,
           },
-          setWhere: sql`excluded.updated_at > ${tags.updatedAt}`,
+          setWhere: sql`${tags.deletedAt} IS NULL AND excluded.updated_at > ${tags.updatedAt}`,
         })
     }
 
@@ -358,7 +358,7 @@ syncRoutes.post('/', requireAuth, async (c) => {
             deletedAt: sql`excluded.deleted_at`,
             syncedAt: sql`excluded.synced_at`,
           },
-          setWhere: sql`excluded.updated_at > ${palettes.updatedAt}`,
+          setWhere: sql`${palettes.deletedAt} IS NULL AND excluded.updated_at > ${palettes.updatedAt}`,
         })
     }
 

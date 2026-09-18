@@ -1,5 +1,6 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { submitFeedback } from '../lib/feedback'
+import { Modal } from './Modal'
 
 interface FeedbackPanelProps {
   onClose: () => void
@@ -11,14 +12,6 @@ export function FeedbackPanel({ onClose }: FeedbackPanelProps) {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -43,39 +36,21 @@ export function FeedbackPanel({ onClose }: FeedbackPanelProps) {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-overlay p-0 sm:items-center sm:p-4"
-      onClick={onClose}
-      role="presentation"
+    <Modal
+      label="意见反馈"
+      onClose={onClose}
+      size="md"
+      bodyClassName="px-5 py-5"
+      header={
+        <>
+          <h2 className="text-base font-semibold text-ink">意见反馈</h2>
+          <p className="mt-0.5 text-xs text-ink-soft">
+            用起来哪里不顺手？想加点什么？都可以说
+          </p>
+        </>
+      }
     >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="意见反馈"
-        className="flex max-h-[85vh] w-full max-w-md flex-col rounded-t-3xl border border-line bg-cream/95 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.6)] sm:rounded-3xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-center justify-between border-b border-line px-5 py-4">
-          <div>
-            <h2 className="text-base font-semibold text-ink">意见反馈</h2>
-            <p className="mt-0.5 text-xs text-ink-soft">
-              用起来哪里不顺手？想加点什么？都可以说
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="关闭意见反馈"
-            className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
-          >
-            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
-          {submitted ? (
+      {submitted ? (
             <div className="py-10 text-center">
               <div className="mx-auto grid size-14 place-items-center rounded-full bg-sage-soft/60">
                 <svg viewBox="0 0 24 24" className="size-6 text-sage" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -138,8 +113,6 @@ export function FeedbackPanel({ onClose }: FeedbackPanelProps) {
               </button>
             </form>
           )}
-        </div>
-      </div>
-    </div>
+    </Modal>
   )
 }

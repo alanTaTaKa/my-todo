@@ -22,6 +22,7 @@ export function TaskInput({ onAdd }: TaskInputProps) {
         onChange={(event) => setValue(event.target.value)}
         placeholder="想做点什么？慢慢写下来…"
         aria-label="新增任务"
+        maxLength={200}
         className="min-w-0 flex-1 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-[15px] text-ink shadow-inner outline-none transition placeholder:text-ink-soft/70 focus:border-gold-soft focus:bg-surface-strong"
       />
       <button

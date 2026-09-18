@@ -8,6 +8,7 @@ import {
   type SyncResponse,
   type SyncStatus,
 } from '../lib/sync'
+import { canonicalJson } from '../lib/merge'
 import { loadActiveSyncUser, saveActiveSyncUser } from '../lib/storage'
 
 interface UseSyncOptions {
@@ -31,14 +32,21 @@ const MAX_RETRY_MS = 300000
 const DEBOUNCE_MS = 1200
 const VISIBLE_POLL_MS = 5000
 const HIDDEN_POLL_MS = 60000
+const BATCH_SIZE = 500
 
-function maxUpdatedAt(items: { updatedAt: number }[]): number {
-  let max = 0
-  for (const item of items) {
-    if (item.updatedAt > max) max = item.updatedAt
-  }
-  return max
+function taskKey(id: string): string {
+  return `task:${id}`
 }
+
+function tagKey(id: string): string {
+  return `tag:${id}`
+}
+
+function paletteKey(id: string): string {
+  return `palette:${id}`
+}
+
+const PROFILE_KEY = 'profile'
 
 export function useSync({
   user,
@@ -60,7 +68,7 @@ export function useSync({
   const [error, setError] = useState<string | null>(null)
 
   const cursor = useRef(0)
-  const lastPushed = useRef(-1)
+  const synced = useRef(new Map<string, string>())
   const skipPush = useRef(false)
   const busy = useRef(false)
   const pending = useRef(false)
@@ -95,74 +103,125 @@ export function useSync({
     }
 
     busy.current = true
-    setStatus('syncing')
     setError(null)
 
     try {
       const snapshot = latest.current
-      const changedTasks = snapshot.tasks.filter(
-        (task) => task.updatedAt > lastPushed.current,
-      )
-      const changedTags = snapshot.tags.filter(
-        (tag) => tag.updatedAt > lastPushed.current,
-      )
-      const changedPalettes = snapshot.palettes.filter(
-        (palette) => palette.updatedAt > lastPushed.current,
-      )
-      const profileChanged = snapshot.profile.updatedAt > lastPushed.current
+      const snapshots = synced.current
 
-      let pushed: SyncResponse | null = null
-      if (
-        !skipPush.current &&
-        (changedTasks.length > 0 ||
-          changedTags.length > 0 ||
-          changedPalettes.length > 0 ||
-          profileChanged)
-      ) {
-        pushed = await pushSync({
-          tasks: changedTasks,
-          tags: changedTags,
-          palettes: changedPalettes,
-          profile: snapshot.profile,
-        })
+      const isChanged = (key: string, value: unknown): boolean =>
+        canonicalJson(value) !== snapshots.get(key)
+
+      const changedTasks = snapshot.tasks.filter((task) =>
+        isChanged(taskKey(task.id), task),
+      )
+      const changedTags = snapshot.tags.filter((tag) =>
+        isChanged(tagKey(tag.id), tag),
+      )
+      const changedPalettes = snapshot.palettes.filter((palette) =>
+        isChanged(paletteKey(palette.id), palette),
+      )
+      const profileChanged = isChanged(PROFILE_KEY, snapshot.profile)
+      const hasLocalChanges =
+        changedTasks.length > 0 ||
+        changedTags.length > 0 ||
+        changedPalettes.length > 0 ||
+        profileChanged
+
+      const responses: SyncResponse[] = []
+      if (!skipPush.current && hasLocalChanges) {
+        setStatus('syncing')
+        const batchCount = Math.max(
+          1,
+          Math.ceil(
+            Math.max(
+              changedTasks.length,
+              changedTags.length,
+              changedPalettes.length,
+            ) / BATCH_SIZE,
+          ),
+        )
+
+        for (let index = 0; index < batchCount; index += 1) {
+          const start = index * BATCH_SIZE
+          const batch = {
+            tasks: changedTasks.slice(start, start + BATCH_SIZE),
+            tags: changedTags.slice(start, start + BATCH_SIZE),
+            palettes: changedPalettes.slice(start, start + BATCH_SIZE),
+            profile: index === 0 ? snapshot.profile : null,
+          }
+
+          const response = await pushSync(batch)
+          responses.push(response)
+
+          for (const task of batch.tasks) {
+            snapshots.set(taskKey(task.id), canonicalJson(task))
+          }
+          for (const tag of batch.tags) {
+            snapshots.set(tagKey(tag.id), canonicalJson(tag))
+          }
+          for (const palette of batch.palettes) {
+            snapshots.set(paletteKey(palette.id), canonicalJson(palette))
+          }
+          if (batch.profile) {
+            snapshots.set(PROFILE_KEY, canonicalJson(batch.profile))
+          }
+        }
       }
       skipPush.current = false
 
       const pulled = await pullSync(cursor.current)
-      const incomingTasks = pushed ? [...pushed.tasks, ...pulled.tasks] : pulled.tasks
-      const incomingTags = pushed ? [...pushed.tags, ...pulled.tags] : pulled.tags
-      const incomingPalettes = pushed
-        ? [...pushed.palettes, ...pulled.palettes]
-        : pulled.palettes
+      const incomingTasks = [
+        ...responses.flatMap((response) => response.tasks),
+        ...pulled.tasks,
+      ]
+      const incomingTags = [
+        ...responses.flatMap((response) => response.tags),
+        ...pulled.tags,
+      ]
+      const incomingPalettes = [
+        ...responses.flatMap((response) => response.palettes),
+        ...pulled.palettes,
+      ]
+      const incomingProfiles = [
+        ...responses.map((response) => response.profile),
+        pulled.profile,
+      ]
 
       mergeTasks(incomingTasks)
       mergeTags(incomingTags)
       mergePalettes(incomingPalettes)
-      mergeProfile(pushed?.profile ?? null)
-      mergeProfile(pulled.profile)
+      for (const incoming of incomingProfiles) {
+        mergeProfile(incoming)
+      }
 
-      const remoteProfileUpdatedAt = Math.max(
-        pushed?.profile?.updatedAt ?? 0,
-        pulled.profile?.updatedAt ?? 0,
-      )
-      const localMax = Math.max(
-        maxUpdatedAt(snapshot.tasks),
-        maxUpdatedAt(snapshot.tags),
-        maxUpdatedAt(snapshot.palettes),
-        snapshot.profile.updatedAt,
-      )
-      const remoteMax = Math.max(
-        maxUpdatedAt(incomingTasks),
-        maxUpdatedAt(incomingTags),
-        maxUpdatedAt(incomingPalettes),
-        remoteProfileUpdatedAt,
-      )
-      lastPushed.current = Math.max(lastPushed.current, localMax, remoteMax)
+      for (const task of incomingTasks) {
+        snapshots.set(taskKey(task.id), canonicalJson(task))
+      }
+      for (const tag of incomingTags) {
+        snapshots.set(tagKey(tag.id), canonicalJson(tag))
+      }
+      for (const palette of incomingPalettes) {
+        snapshots.set(paletteKey(palette.id), canonicalJson(palette))
+      }
+      for (const incoming of incomingProfiles) {
+        if (incoming) {
+          snapshots.set(PROFILE_KEY, canonicalJson(incoming))
+        }
+      }
+
       cursor.current = pulled.serverTime
+
+      const didChange =
+        hasLocalChanges ||
+        incomingTasks.length > 0 ||
+        incomingTags.length > 0 ||
+        incomingPalettes.length > 0 ||
+        incomingProfiles.some((incoming) => incoming !== null)
 
       retryDelay.current = BASE_RETRY_MS
       clearRetry()
-      setLastSyncedAt(Date.now())
+      if (didChange) setLastSyncedAt(Date.now())
       setStatus('synced')
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : '同步失败，请稍后重试')
@@ -188,7 +247,7 @@ export function useSync({
 
   useEffect(() => {
     cursor.current = 0
-    lastPushed.current = -1
+    synced.current.clear()
     retryDelay.current = BASE_RETRY_MS
     pending.current = false
     clearRetry()

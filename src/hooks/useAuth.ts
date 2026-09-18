@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
+  deleteAccount as apiDeleteAccount,
   fetchMe,
   login as apiLogin,
   logout as apiLogout,
@@ -41,5 +42,13 @@ export function useAuth() {
     }
   }, [])
 
-  return { user, loading, register, login, logout }
+  const deleteAccount = useCallback(async () => {
+    try {
+      await apiDeleteAccount()
+    } finally {
+      setUser(null)
+    }
+  }, [])
+
+  return { user, loading, register, login, logout, deleteAccount }
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Task } from '../types'
 import { loadTasks, saveTasks } from '../lib/storage'
 import { mergeById } from '../lib/merge'
@@ -29,7 +29,7 @@ export function useTasks() {
     saveTasks(tasks)
   }, [tasks])
 
-  const addTask = (title: string) => {
+  const addTask = useCallback((title: string) => {
     const trimmed = title.trim()
     if (!trimmed) return
 
@@ -48,9 +48,9 @@ export function useTasks() {
       tagIds: [],
     }
     setTasks((prev) => [task, ...prev])
-  }
+  }, [])
 
-  const toggleTask = (id: string) => {
+  const toggleTask = useCallback((id: string) => {
     setTasks((prev) =>
       prev.map((task) => {
         if (task.id !== id) return task
@@ -64,9 +64,9 @@ export function useTasks() {
         }
       }),
     )
-  }
+  }, [])
 
-  const updateTask = (id: string, patch: TaskPatch) => {
+  const updateTask = useCallback((id: string, patch: TaskPatch) => {
     setTasks((prev) =>
       prev.map((task) => {
         if (task.id !== id) return task
@@ -80,9 +80,9 @@ export function useTasks() {
         return { ...next, updatedAt: Date.now() }
       }),
     )
-  }
+  }, [])
 
-  const detachTag = (tagId: string) => {
+  const detachTag = useCallback((tagId: string) => {
     setTasks((prev) =>
       prev.map((task) =>
         task.tagIds.includes(tagId)
@@ -94,9 +94,9 @@ export function useTasks() {
           : task,
       ),
     )
-  }
+  }, [])
 
-  const deleteTask = (id: string) => {
+  const deleteTask = useCallback((id: string) => {
     const now = Date.now()
     setTasks((prev) =>
       prev.map((task) =>
@@ -105,9 +105,9 @@ export function useTasks() {
           : task,
       ),
     )
-  }
+  }, [])
 
-  const restoreTask = (id: string) => {
+  const restoreTask = useCallback((id: string) => {
     const now = Date.now()
     setTasks((prev) =>
       prev.map((task) =>
@@ -116,9 +116,9 @@ export function useTasks() {
           : task,
       ),
     )
-  }
+  }, [])
 
-  const purgeTask = (id: string) => {
+  const purgeTask = useCallback((id: string) => {
     const now = Date.now()
     setTasks((prev) =>
       prev.map((task) =>
@@ -127,9 +127,9 @@ export function useTasks() {
           : task,
       ),
     )
-  }
+  }, [])
 
-  const emptyTrash = () => {
+  const emptyTrash = useCallback(() => {
     const now = Date.now()
     setTasks((prev) =>
       prev.map((task) =>
@@ -138,9 +138,9 @@ export function useTasks() {
           : task,
       ),
     )
-  }
+  }, [])
 
-  const deleteAllTasks = () => {
+  const deleteAllTasks = useCallback(() => {
     const now = Date.now()
     setTasks((prev) =>
       prev.map((task) =>
@@ -149,7 +149,7 @@ export function useTasks() {
           : task,
       ),
     )
-  }
+  }, [])
 
   const resetTasks = useCallback(() => {
     setTasks([])
@@ -165,15 +165,29 @@ export function useTasks() {
     })
   }, [])
 
-  const visible = tasks.filter(
-    (task) => task.deletedAt === null && task.purgedAt === null,
+  const activeTasks = useMemo(
+    () =>
+      tasks.filter(
+        (task) => task.completed === false && task.deletedAt === null && task.purgedAt === null,
+      ),
+    [tasks],
   )
-  const activeTasks = visible.filter((task) => !task.completed)
-  const completedTasks = visible.filter((task) => task.completed)
 
-  const deletedTasks = tasks
-    .filter((task) => task.deletedAt !== null && task.purgedAt === null)
-    .sort((a, b) => (b.deletedAt ?? 0) - (a.deletedAt ?? 0))
+  const completedTasks = useMemo(
+    () =>
+      tasks.filter(
+        (task) => task.completed === true && task.deletedAt === null && task.purgedAt === null,
+      ),
+    [tasks],
+  )
+
+  const deletedTasks = useMemo(
+    () =>
+      tasks
+        .filter((task) => task.deletedAt !== null && task.purgedAt === null)
+        .sort((a, b) => (b.deletedAt ?? 0) - (a.deletedAt ?? 0)),
+    [tasks],
+  )
 
   return {
     activeTasks,

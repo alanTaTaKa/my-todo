@@ -1,6 +1,7 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import type { AuthUser } from '../lib/auth'
 import type { SyncStatus } from '../lib/sync'
+import { Modal } from './Modal'
 
 interface AuthPanelProps {
   user: AuthUser | null
@@ -11,6 +12,7 @@ interface AuthPanelProps {
   onLogin: (email: string, password: string) => Promise<void>
   onRegister: (email: string, password: string) => Promise<void>
   onLogout: () => Promise<void>
+  onDeleteAccount: () => Promise<void>
   onSync: () => void
   onClose: () => void
 }
@@ -37,6 +39,7 @@ export function AuthPanel({
   onLogin,
   onRegister,
   onLogout,
+  onDeleteAccount,
   onSync,
   onClose,
 }: AuthPanelProps) {
@@ -46,14 +49,6 @@ export function AuthPanel({
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
 
   const switchMode = (next: Mode) => {
     setMode(next)
@@ -90,6 +85,26 @@ export function AuthPanel({
     }
   }
 
+  const handleDeleteAccount = async () => {
+    if (submitting) return
+    const confirmed = window.confirm(
+      '将永久删除账号，以及云端的全部任务、标签和配色，且无法恢复。确定继续吗？',
+    )
+    if (!confirmed) return
+    if (!window.confirm('再次确认：此操作不可撤销。')) return
+
+    setSubmitting(true)
+    setError(null)
+    try {
+      await onDeleteAccount()
+      onClose()
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : '注销失败，请稍后重试')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   const syncLabel =
     syncStatus === 'syncing'
       ? '同步中…'
@@ -102,38 +117,20 @@ export function AuthPanel({
             : '尚未同步'
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-overlay p-0 sm:items-center sm:p-4"
-      onClick={onClose}
-      role="presentation"
+    <Modal
+      label="账号"
+      onClose={onClose}
+      size="md"
+      bodyClassName="px-5 py-5"
+      header={
+        <>
+          <h2 className="text-base font-semibold text-ink">账号</h2>
+          <p className="mt-0.5 text-xs text-ink-soft">
+            登录后自动云同步；不登录仅保存在本机
+          </p>
+        </>
+      }
     >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="账号"
-        className="flex max-h-[85vh] w-full max-w-md flex-col rounded-t-3xl border border-line bg-cream/95 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.6)] sm:rounded-3xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-center justify-between border-b border-line px-5 py-4">
-          <div>
-            <h2 className="text-base font-semibold text-ink">账号</h2>
-            <p className="mt-0.5 text-xs text-ink-soft">
-              登录后自动云同步；不登录仅保存在本机
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="关闭账号"
-            className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
-          >
-            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
           {loading ? (
             <p className="py-8 text-center text-sm text-ink-soft">正在读取账号信息…</p>
           ) : user ? (
@@ -179,6 +176,21 @@ export function AuthPanel({
                 className="w-full rounded-xl border border-line bg-surface px-4 py-2.5 text-sm text-ink-soft transition hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting ? '退出中…' : '退出登录'}
+              </button>
+
+              {error && (
+                <p className="rounded-xl border border-line bg-surface px-3 py-2 text-xs text-ink-soft">
+                  {error}
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={submitting}
+                className="w-full rounded-xl border border-red-500/30 px-4 py-2.5 text-sm text-red-500 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                注销账号并删除云端数据
               </button>
             </div>
           ) : (
@@ -287,8 +299,6 @@ export function AuthPanel({
               </p>
             </>
           )}
-        </div>
-      </div>
-    </div>
+    </Modal>
   )
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { memo, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import type { Priority, Tag, Task } from '../types'
 import type { TaskPatch } from '../hooks/useTasks'
 import { fromDateTimeInputValue, toDateTimeInputValue } from '../lib/date'
@@ -16,7 +16,13 @@ interface TaskItemProps {
   onDelete: (id: string) => void
 }
 
-export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemProps) {
+export const TaskItem = memo(function TaskItem({
+  task,
+  tags,
+  onToggle,
+  onUpdate,
+  onDelete,
+}: TaskItemProps) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(task.title)
   const [draftTagIds, setDraftTagIds] = useState<string[]>(task.tagIds)
@@ -102,6 +108,7 @@ export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemP
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={handleKeyDown}
                 aria-label="编辑任务"
+                maxLength={200}
                 className="w-full rounded-lg border border-gold-soft/70 bg-surface-solid px-2 py-1.5 text-[15px] text-ink outline-none"
               />
 
@@ -270,4 +277,4 @@ export function TaskItem({ task, tags, onToggle, onUpdate, onDelete }: TaskItemP
       </div>
     </li>
   )
-}
+})

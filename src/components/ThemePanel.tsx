@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { THEMES, type ThemeId } from '../lib/themes'
 import {
   DUAL_PALETTES,
@@ -8,6 +8,7 @@ import {
 } from '../lib/palettes'
 import { normalizeHex } from '../lib/color'
 import { useDraggable } from '../hooks/useDraggable'
+import { Modal } from './Modal'
 import { SavedPalettes } from './SavedPalettes'
 
 const USER_PALETTE_ID = 'user-custom'
@@ -60,14 +61,6 @@ export function ThemePanel({
         : customPalette.colors[1]
       : '#5ba5b2',
   )
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
 
   const customActive = themeId === 'custom'
 
@@ -132,63 +125,43 @@ export function ThemePanel({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-overlay p-0 sm:items-center sm:p-4"
-      onClick={onClose}
-      role="presentation"
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="主题切换"
-        style={{
-          transform: `translate(${offset.x}px, ${offset.y}px)`,
-          userSelect: dragging ? 'none' : undefined,
-        }}
-        className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-t-3xl border border-line bg-cream/95 shadow-[0_24px_70px_-35px_rgba(122,101,60,0.6)] sm:rounded-3xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div
-          {...handleProps}
-          className={`flex touch-none select-none items-center justify-between border-b border-line px-5 py-4 ${
-            dragging ? 'cursor-grabbing' : 'cursor-grab'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            {view === 'custom' && (
-              <button
-                type="button"
-                onClick={() => setView('presets')}
-                aria-label="返回主题列表"
-                className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
-              >
-                <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m15 18-6-6 6-6" />
-                </svg>
-              </button>
-            )}
-            <div>
-              <h2 className="text-base font-semibold text-ink">
-                {view === 'presets' ? '主题' : '自定义主题'}
-              </h2>
-              <p className="mt-0.5 text-xs text-ink-soft">
-                {view === 'presets' ? '选择喜欢的配色' : '点击配色即可应用'}
-              </p>
-            </div>
+    <Modal
+      label="主题切换"
+      onClose={onClose}
+      size="lg"
+      dialogStyle={{
+        transform: `translate(${offset.x}px, ${offset.y}px)`,
+        userSelect: dragging ? 'none' : undefined,
+      }}
+      headerClassName={`touch-none select-none ${
+        dragging ? 'cursor-grabbing' : 'cursor-grab'
+      }`}
+      handleProps={handleProps}
+      header={
+        <div className="flex items-center gap-2">
+          {view === 'custom' && (
+            <button
+              type="button"
+              onClick={() => setView('presets')}
+              aria-label="返回主题列表"
+              className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
+            >
+              <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+          )}
+          <div>
+            <h2 className="text-base font-semibold text-ink">
+              {view === 'presets' ? '主题' : '自定义主题'}
+            </h2>
+            <p className="mt-0.5 text-xs text-ink-soft">
+              {view === 'presets' ? '选择喜欢的配色' : '点击配色即可应用'}
+            </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="关闭主题"
-            className="grid size-8 place-items-center rounded-lg text-ink-soft transition hover:bg-surface-strong hover:text-ink"
-          >
-            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          </button>
         </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+      }
+    >
           {view === 'presets' ? (
             <>
               <div className="grid grid-cols-2 gap-2.5">
@@ -350,9 +323,7 @@ export function ThemePanel({
               />
             </div>
           )}
-        </div>
-      </div>
-    </div>
+    </Modal>
   )
 }
 

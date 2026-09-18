@@ -179,4 +179,16 @@ authRoutes.get('/me', requireAuth, (c) => {
   return c.json({ user: publicUser(c.get('user')) })
 })
 
+authRoutes.delete('/account', requireAuth, async (c) => {
+  const user = c.get('user')
+  await db.delete(users).where(eq(users.id, user.id))
+
+  deleteCookie(c, SESSION_COOKIE, {
+    path: '/',
+    sameSite: env.cookieSameSite,
+    secure: cookieSecure,
+  })
+  return c.json({ ok: true })
+})
+
 export { authRoutes }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { resolveTheme, type ThemeId } from '../lib/themes'
 import type { CustomPalette, SavedPalette } from '../lib/palettes'
 import { buildCustomThemeCss, deriveCustomTheme } from '../lib/customTheme'
@@ -149,7 +149,10 @@ export function useTheme() {
     setSavedPalettes([])
   }, [])
 
-  const visiblePalettes = savedPalettes.filter((palette) => palette.deletedAt === null)
+  const visiblePalettes = useMemo(
+    () => savedPalettes.filter((palette) => palette.deletedAt === null),
+    [savedPalettes],
+  )
 
   return {
     themeId,

@@ -24,7 +24,7 @@ export type CookieSameSite = 'Lax' | 'Strict' | 'None'
 function resolveSameSite(): CookieSameSite {
   const raw = process.env.COOKIE_SAME_SITE
   if (raw === 'Lax' || raw === 'Strict' || raw === 'None') return raw
-  return isProduction ? 'None' : 'Lax'
+  return 'Lax'
 }
 
 export const env = {
