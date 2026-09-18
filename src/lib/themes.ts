@@ -4,6 +4,7 @@ export type ThemeId =
   | 'songlv'
   | 'bishan'
   | 'tianshuibi'
+  | 'xiaowu'
   | 'tuihong'
   | 'taoyao'
   | 'qiubo'
@@ -28,6 +29,7 @@ export const THEME_IDS: ThemeId[] = [
   'songlv',
   'bishan',
   'tianshuibi',
+  'xiaowu',
   'tuihong',
   'taoyao',
   'qiubo',
@@ -68,6 +70,12 @@ export const THEMES: ThemeOption[] = [
     name: '天水碧',
     description: '凝脂初雪，碧水微澜',
     swatches: ['#F7F3EB', '#5BA5B2'],
+  },
+  {
+    id: 'xiaowu',
+    name: '小雾',
+    description: '雾青蓝绿，清透柔和',
+    swatches: ['#eef4f2', '#7aa9a4', '#8fae9c'],
   },
   {
     id: 'tuihong',

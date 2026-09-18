@@ -7,8 +7,10 @@ import {
   type SavedPalette,
 } from '../lib/palettes'
 import { normalizeHex } from '../lib/color'
+import { getCharacterAvatar } from '../lib/characters'
 import { useDraggable } from '../hooks/useDraggable'
 import { Modal } from './Modal'
+import { CharacterAvatar } from './CharacterAvatar'
 import { SavedPalettes } from './SavedPalettes'
 
 const USER_PALETTE_ID = 'user-custom'
@@ -167,6 +169,7 @@ export function ThemePanel({
               <div className="grid grid-cols-2 gap-2.5">
                 {THEMES.map((theme) => {
                   const active = theme.id === themeId
+                  const avatar = getCharacterAvatar(theme.id)
                   return (
                     <button
                       key={theme.id}
@@ -179,22 +182,36 @@ export function ThemePanel({
                           : 'border-line bg-surface hover:bg-surface-2'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex gap-1">
-                          {theme.swatches.map((color) => (
-                            <span
-                              key={color}
-                              className="size-5 rounded-full border border-line"
-                              style={{ backgroundColor: color }}
-                            />
-                          ))}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex gap-1">
+                            {theme.swatches.map((color) => (
+                              <span
+                                key={color}
+                                className="size-5 rounded-full border border-line"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                          <p className="mt-2 text-sm font-medium text-ink">
+                            {theme.name}
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-ink-soft">
+                            {theme.description}
+                          </p>
                         </div>
-                        {active && <CheckBadge />}
+                        {(avatar || active) && (
+                          <div className="flex shrink-0 flex-col items-center gap-1">
+                            {avatar && (
+                              <CharacterAvatar
+                                src={avatar}
+                                alt={`${theme.name} 角色头像`}
+                              />
+                            )}
+                            {active && <CheckBadge />}
+                          </div>
+                        )}
                       </div>
-                      <p className="mt-2 text-sm font-medium text-ink">{theme.name}</p>
-                      <p className="mt-0.5 text-[11px] text-ink-soft">
-                        {theme.description}
-                      </p>
                     </button>
                   )
                 })}
