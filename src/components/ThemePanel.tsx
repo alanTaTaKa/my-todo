@@ -1,5 +1,10 @@
 import { useState } from 'react'
-import { THEMES, type ThemeId } from '../lib/themes'
+import {
+  themesForMode,
+  themesInMode,
+  type ThemeId,
+  type ThemeOption,
+} from '../lib/themes'
 import {
   DUAL_PALETTES,
   TRI_PALETTES,
@@ -27,6 +32,8 @@ interface ThemePanelProps {
   }) => SavedPalette
   onRenameSavedPalette: (id: string, name: string) => void
   onDeleteSavedPalette: (id: string) => void
+  isCustomUnlocked: boolean
+  onRequestUpgrade: () => void
   onClose: () => void
 }
 
@@ -39,10 +46,20 @@ export function ThemePanel({
   onAddSavedPalette,
   onRenameSavedPalette,
   onDeleteSavedPalette,
+  isCustomUnlocked,
+  onRequestUpgrade,
   onClose,
 }: ThemePanelProps) {
   const [view, setView] = useState<'presets' | 'custom'>('presets')
   const { offset, dragging, handleProps } = useDraggable()
+
+  const openCustom = () => {
+    if (isCustomUnlocked) {
+      setView('custom')
+    } else {
+      onRequestUpgrade()
+    }
+  }
 
   const isUserPalette = customPalette?.id === USER_PALETTE_ID
   const [userMode, setUserMode] = useState<'dual' | 'tri'>(
@@ -167,59 +184,59 @@ export function ThemePanel({
           {view === 'presets' ? (
             <>
               <div className="grid grid-cols-2 gap-2.5">
-                {THEMES.map((theme) => {
-                  const active = theme.id === themeId
-                  const avatar = getCharacterAvatar(theme.id)
-                  return (
-                    <button
-                      key={theme.id}
-                      type="button"
-                      onClick={() => onSelect(theme.id)}
-                      aria-pressed={active}
-                      className={`rounded-2xl border p-3 text-left transition ${
-                        active
-                          ? 'border-gold bg-surface-strong'
-                          : 'border-line bg-surface hover:bg-surface-2'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex gap-1">
-                            {theme.swatches.map((color) => (
-                              <span
-                                key={color}
-                                className="size-5 rounded-full border border-line"
-                                style={{ backgroundColor: color }}
-                              />
-                            ))}
+                {themesForMode('minimal').map((theme) => {
+                    const active = theme.id === themeId
+                    const avatar = getCharacterAvatar(theme.id)
+                    return (
+                      <button
+                        key={theme.id}
+                        type="button"
+                        onClick={() => onSelect(theme.id)}
+                        aria-pressed={active}
+                        className={`rounded-2xl border p-3 text-left transition ${
+                          active
+                            ? 'border-gold bg-surface-strong'
+                            : 'border-line bg-surface hover:bg-surface-2'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex gap-1">
+                              {theme.swatches.map((color) => (
+                                <span
+                                  key={color}
+                                  className="size-5 rounded-full border border-line"
+                                  style={{ backgroundColor: color }}
+                                />
+                              ))}
+                            </div>
+                            <p className="mt-2 text-sm font-medium text-ink">
+                              {theme.name}
+                            </p>
+                            <p className="mt-0.5 text-[11px] text-ink-soft">
+                              {theme.description}
+                            </p>
                           </div>
-                          <p className="mt-2 text-sm font-medium text-ink">
-                            {theme.name}
-                          </p>
-                          <p className="mt-0.5 text-[11px] text-ink-soft">
-                            {theme.description}
-                          </p>
+                          {(avatar || active) && (
+                            <div className="flex shrink-0 flex-col items-center gap-1">
+                              {avatar && (
+                                <CharacterAvatar
+                                  src={avatar}
+                                  alt={`${theme.name} 角色头像`}
+                                />
+                              )}
+                              {active && <CheckBadge />}
+                            </div>
+                          )}
                         </div>
-                        {(avatar || active) && (
-                          <div className="flex shrink-0 flex-col items-center gap-1">
-                            {avatar && (
-                              <CharacterAvatar
-                                src={avatar}
-                                alt={`${theme.name} 角色头像`}
-                              />
-                            )}
-                            {active && <CheckBadge />}
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  )
-                })}
+                      </button>
+                    )
+                  })}
               </div>
 
               <button
                 type="button"
-                onClick={() => setView('custom')}
+                onClick={openCustom}
                 className={`mt-2.5 flex w-full items-center justify-between rounded-2xl border p-3 text-left transition ${
                   customActive
                     ? 'border-gold bg-surface-strong'
@@ -248,6 +265,12 @@ export function ThemePanel({
                 </div>
                 <div className="flex items-center gap-1.5">
                   {customActive && <CheckBadge />}
+                  {!isCustomUnlocked && (
+                    <svg viewBox="0 0 24 24" className="size-3.5 text-ink-soft" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="5" y="11" width="14" height="9" rx="2" />
+                      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                    </svg>
+                  )}
                   <svg viewBox="0 0 24 24" className="size-4 text-ink-soft" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m9 18 6-6-6-6" />
                   </svg>
@@ -324,6 +347,21 @@ export function ThemePanel({
                 />
               )}
 
+              <ThemePresetGroup
+                title="二次元风格"
+                hint="角色灵感配色"
+                themes={themesInMode('anime')}
+                activeId={themeId}
+                onSelect={onSelect}
+              />
+              <ThemePresetGroup
+                title="国风风格"
+                hint="东方传统色"
+                themes={themesInMode('guofeng')}
+                activeId={themeId}
+                onSelect={onSelect}
+              />
+
               <PaletteGroup
                 title="双色搭配"
                 hint="主色 · 辅助色"
@@ -351,6 +389,64 @@ function CheckBadge() {
         <path d="M4 10.5 8 14.5 16 5.5" />
       </svg>
     </span>
+  )
+}
+
+interface ThemePresetGroupProps {
+  title: string
+  hint: string
+  themes: ThemeOption[]
+  activeId: ThemeId
+  onSelect: (id: ThemeId) => void
+}
+
+function ThemePresetGroup({
+  title,
+  hint,
+  themes,
+  activeId,
+  onSelect,
+}: ThemePresetGroupProps) {
+  if (themes.length === 0) return null
+  return (
+    <section>
+      <div className="mb-2 flex items-baseline justify-between">
+        <h3 className="text-sm font-medium text-ink">{title}</h3>
+        <span className="text-[11px] text-ink-soft">{hint}</span>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {themes.map((theme) => {
+          const active = theme.id === activeId
+          return (
+            <button
+              key={theme.id}
+              type="button"
+              onClick={() => onSelect(theme.id)}
+              aria-pressed={active}
+              className={`rounded-2xl border p-2.5 text-left transition ${
+                active
+                  ? 'border-gold bg-surface-strong'
+                  : 'border-line bg-surface hover:bg-surface-2'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex gap-1">
+                  {theme.swatches.map((color) => (
+                    <span
+                      key={color}
+                      className="size-4 rounded-full border border-line"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+                {active && <CheckBadge />}
+              </div>
+              <p className="mt-1.5 text-xs text-ink">{theme.name}</p>
+            </button>
+          )
+        })}
+      </div>
+    </section>
   )
 }
 

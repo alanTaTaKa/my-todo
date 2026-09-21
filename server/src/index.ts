@@ -5,6 +5,7 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { secureHeaders } from 'hono/secure-headers'
 import { authRoutes } from './auth/routes.js'
+import { entitlementRoutes } from './entitlements/routes.js'
 import { feedbackRoutes } from './feedback/routes.js'
 import { syncRoutes } from './sync/routes.js'
 import { rateLimit } from './middleware/rate-limit.js'
@@ -34,11 +35,13 @@ app.use(
 app.use('/api/auth/*', rateLimit({ windowMs: 60_000, max: 20 }))
 app.use('/api/feedback', rateLimit({ windowMs: 60_000, max: 5 }))
 app.use('/api/sync', rateLimit({ windowMs: 60_000, max: 120 }))
+app.use('/api/me/*', rateLimit({ windowMs: 60_000, max: 60 }))
 
 app.get('/api/health', (c) => c.json({ ok: true }))
 app.route('/api/auth', authRoutes)
 app.route('/api/sync', syncRoutes)
 app.route('/api/feedback', feedbackRoutes)
+app.route('/api/me', entitlementRoutes)
 
 app.notFound((c) => c.json({ error: '接口不存在' }, 404))
 app.onError((error, c) => {

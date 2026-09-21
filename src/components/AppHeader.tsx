@@ -3,10 +3,16 @@ import { useState } from 'react'
 interface AppHeaderProps {
   title: string
   subtitle: string
+  editable: boolean
   onChange: (patch: { title?: string; subtitle?: string }) => void
 }
 
-export function AppHeader({ title, subtitle, onChange }: AppHeaderProps) {
+export function AppHeader({
+  title,
+  subtitle,
+  editable,
+  onChange,
+}: AppHeaderProps) {
   return (
     <header className="mb-8 text-center">
       <p className="text-xs tracking-[0.35em] text-ink-soft/80">DAILY CALM</p>
@@ -16,6 +22,7 @@ export function AppHeader({ title, subtitle, onChange }: AppHeaderProps) {
           fallback="今日待办"
           ariaLabel="修改主标题"
           maxLength={30}
+          editable={editable}
           onSave={(value) => onChange({ title: value })}
           inputClassName="w-full max-w-xs rounded-xl border border-line bg-surface-2 px-3 py-1 text-center text-2xl font-semibold text-ink outline-none focus:border-gold-soft sm:text-3xl"
           buttonClassName="rounded-lg px-1 transition hover:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-soft"
@@ -27,6 +34,7 @@ export function AppHeader({ title, subtitle, onChange }: AppHeaderProps) {
           fallback="慢慢来，一件一件完成就好"
           ariaLabel="修改副标题"
           maxLength={60}
+          editable={editable}
           onSave={(value) => onChange({ subtitle: value })}
           inputClassName="w-full max-w-sm rounded-xl border border-line bg-surface-2 px-3 py-1 text-center text-sm text-ink outline-none focus:border-gold-soft"
           buttonClassName="rounded-lg px-1 text-ink-soft transition hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-soft"
@@ -41,6 +49,7 @@ interface EditableTextProps {
   fallback: string
   ariaLabel: string
   maxLength: number
+  editable: boolean
   onSave: (value: string) => void
   inputClassName: string
   buttonClassName: string
@@ -51,6 +60,7 @@ function EditableText({
   fallback,
   ariaLabel,
   maxLength,
+  editable,
   onSave,
   inputClassName,
   buttonClassName,
@@ -67,6 +77,10 @@ function EditableText({
     setEditing(false)
     const next = draft.trim() || fallback
     if (next !== value) onSave(next)
+  }
+
+  if (!editable) {
+    return <span title="升级后可修改">{value}</span>
   }
 
   if (editing) {

@@ -372,6 +372,404 @@
   --color-chip-text: #4a4560;
 }
 
+:root[data-theme="qingdai"] {
+  --color-cream: #eef1f8;
+  --color-sand: #d7dcec;
+  --color-gold: #56619b;
+  --color-gold-soft: #7a85bd;
+  --color-sage: #708a88;
+  --color-sage-soft: #d9e5e3;
+  --color-ink: #232840;
+  --color-ink-soft: #565d78;
+  --color-on-accent: #ffffff;
+
+  --color-surface: rgba(255, 255, 255, 0.5);
+  --color-surface-soft: rgba(255, 255, 255, 0.44);
+  --color-surface-2: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-surface-solid: rgba(255, 255, 255, 0.94);
+  --color-line: rgba(35, 40, 64, 0.13);
+  --color-line-soft: rgba(35, 40, 64, 0.09);
+  --color-overlay: rgba(0, 0, 0, 0.4);
+
+  --bg-base: #eaeef7;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(86, 97, 155, 0.2), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(255, 255, 255, 0.55), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(112, 138, 136, 0.2), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #f5f7fc 0%, #eaeef7 45%, #dfe5f2 100%);
+
+  --color-chip: rgba(255, 255, 255, 0.55);
+  --color-chip-line: rgba(35, 40, 64, 0.15);
+  --color-chip-text: #565d78;
+}
+
+:root[data-theme="yanzhi"] {
+  --color-cream: #fbeff0;
+  --color-sand: #efd0d4;
+  --color-gold: #bd4a5b;
+  --color-gold-soft: #d47684;
+  --color-sage: #a17a72;
+  --color-sage-soft: #eedcd8;
+  --color-ink: #3a2229;
+  --color-ink-soft: #6f4c53;
+  --color-on-accent: #ffffff;
+
+  --color-surface: rgba(255, 255, 255, 0.52);
+  --color-surface-soft: rgba(255, 255, 255, 0.46);
+  --color-surface-2: rgba(255, 255, 255, 0.64);
+  --color-surface-strong: rgba(255, 255, 255, 0.8);
+  --color-surface-solid: rgba(255, 255, 255, 0.94);
+  --color-line: rgba(58, 34, 41, 0.13);
+  --color-line-soft: rgba(58, 34, 41, 0.09);
+  --color-overlay: rgba(0, 0, 0, 0.4);
+
+  --bg-base: #f7dee1;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(189, 74, 91, 0.18), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(255, 255, 255, 0.55), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(238, 220, 216, 0.6), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #fdeef1 0%, #f7dee1 45%, #f0d3d8 100%);
+
+  --color-chip: rgba(255, 255, 255, 0.58);
+  --color-chip-line: rgba(58, 34, 41, 0.15);
+  --color-chip-text: #6f4c53;
+}
+
+:root[data-theme="t486"] {
+  --color-cream: #646466;
+  --color-sand: #6b6b6d;
+  --color-gold: #f1d991;
+  --color-gold-soft: #f7e9be;
+  --color-sage: #ffffff;
+  --color-sage-soft: #757577;
+  --color-ink: #ffffff;
+  --color-ink-soft: #d2d2d3;
+  --color-on-accent: #745b0f;
+  --color-surface: rgba(255, 255, 255, 0.06);
+  --color-surface-soft: rgba(255, 255, 255, 0.05);
+  --color-surface-2: rgba(255, 255, 255, 0.08);
+  --color-surface-strong: rgba(255, 255, 255, 0.1);
+  --color-surface-solid: rgba(111, 111, 112, 0.95);
+  --color-line: rgba(255, 255, 255, 0.12);
+  --color-line-soft: rgba(255, 255, 255, 0.08);
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --bg-base: #575759;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(241, 217, 145, 0.18), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(255, 255, 255, 0.16), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(163, 163, 164, 0.14), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #68686a 0%, #575759 45%, #4a4a4c 100%);
+  --color-chip: rgba(0, 0, 0, 0.22);
+  --color-chip-line: rgba(255, 255, 255, 0.16);
+  --color-chip-text: #b3b3b5;
+}
+
+:root[data-theme="silverelf"] {
+  --color-cream: #fafafa;
+  --color-sand: #d6d6d5;
+  --color-gold: #d7a9f8;
+  --color-gold-soft: #edd8fc;
+  --color-sage: #9684a1;
+  --color-sage-soft: #d6d3d7;
+  --color-ink: #3c3c3a;
+  --color-ink-soft: #61615d;
+  --color-on-accent: #6e0eb2;
+  --color-surface: rgba(255, 255, 255, 0.5);
+  --color-surface-soft: rgba(255, 255, 255, 0.45);
+  --color-surface-2: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-surface-solid: rgba(255, 255, 255, 0.95);
+  --color-line: rgba(60, 60, 58, 0.14);
+  --color-line-soft: rgba(60, 60, 58, 0.1);
+  --color-overlay: rgba(0, 0, 0, 0.4);
+  --bg-base: #e4e4e3;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(215, 169, 248, 0.14), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(150, 132, 161, 0.14), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(240, 240, 240, 0.5), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #ededed 0%, #e4e4e3 45%, #d6d6d5 100%);
+  --color-chip: rgba(255, 255, 255, 0.55);
+  --color-chip-line: rgba(60, 60, 58, 0.16);
+  --color-chip-text: #6b6b67;
+}
+
+:root[data-theme="younv"] {
+  --color-cream: #fee0ea;
+  --color-sand: #e84b81;
+  --color-gold: #fefeec;
+  --color-gold-soft: #ffffff;
+  --color-sage: #fbb5e1;
+  --color-sage-soft: #f86299;
+  --color-ink: #000000;
+  --color-ink-soft: #351d25;
+  --color-on-accent: #757506;
+  --color-surface: rgba(255, 255, 255, 0.5);
+  --color-surface-soft: rgba(255, 255, 255, 0.45);
+  --color-surface-2: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-surface-solid: rgba(255, 255, 255, 0.95);
+  --color-line: rgba(0, 0, 0, 0.14);
+  --color-line-soft: rgba(0, 0, 0, 0.1);
+  --color-overlay: rgba(0, 0, 0, 0.4);
+  --bg-base: #f75089;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(254, 254, 236, 0.14), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(251, 181, 225, 0.14), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(251, 159, 190, 0.5), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #fa8db2 0%, #f75089 45%, #e84b81 100%);
+  --color-chip: rgba(255, 255, 255, 0.55);
+  --color-chip-line: rgba(0, 0, 0, 0.16);
+  --color-chip-text: #713d4f;
+}
+
+:root[data-theme="redoni"] {
+  --color-cream: #fdfdfd;
+  --color-sand: #e6e6e4;
+  --color-gold: #ffadc5;
+  --color-gold-soft: #ffe0e9;
+  --color-sage: #c876b5;
+  --color-sage-soft: #eddee8;
+  --color-ink: #47473c;
+  --color-ink-soft: #6e6e5c;
+  --color-on-accent: #a30030;
+  --color-surface: rgba(255, 255, 255, 0.5);
+  --color-surface-soft: rgba(255, 255, 255, 0.45);
+  --color-surface-2: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-surface-solid: rgba(255, 255, 255, 0.95);
+  --color-line: rgba(71, 71, 60, 0.14);
+  --color-line-soft: rgba(71, 71, 60, 0.1);
+  --color-overlay: rgba(0, 0, 0, 0.4);
+  --bg-base: #f5f5f3;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(255, 173, 197, 0.14), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(200, 118, 181, 0.14), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(250, 250, 248, 0.5), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #f9f9f7 0%, #f5f5f3 45%, #e6e6e4 100%);
+  --color-chip: rgba(255, 255, 255, 0.55);
+  --color-chip-line: rgba(71, 71, 60, 0.16);
+  --color-chip-text: #6e6e5c;
+}
+
+:root[data-theme="blueoni"] {
+  --color-cream: #fdfdfc;
+  --color-sand: #e4e4e3;
+  --color-gold: #78baf5;
+  --color-gold-soft: #a7d2f9;
+  --color-sage: #be86da;
+  --color-sage-soft: #e9dfed;
+  --color-ink: #4a4a3f;
+  --color-ink-soft: #6b6b5c;
+  --color-on-accent: #094479;
+  --color-surface: rgba(255, 255, 255, 0.5);
+  --color-surface-soft: rgba(255, 255, 255, 0.45);
+  --color-surface-2: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-surface-solid: rgba(255, 255, 255, 0.95);
+  --color-line: rgba(74, 74, 63, 0.14);
+  --color-line-soft: rgba(74, 74, 63, 0.1);
+  --color-overlay: rgba(0, 0, 0, 0.4);
+  --bg-base: #f3f3f1;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(120, 186, 245, 0.14), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(190, 134, 218, 0.14), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(248, 248, 247, 0.5), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #f7f7f6 0%, #f3f3f1 45%, #e4e4e3 100%);
+  --color-chip: rgba(255, 255, 255, 0.55);
+  --color-chip-line: rgba(74, 74, 63, 0.16);
+  --color-chip-text: #707060;
+}
+
+:root[data-theme="greed"] {
+  --color-cream: #343436;
+  --color-sand: #3d3d3e;
+  --color-gold: #fdffff;
+  --color-gold-soft: #ffffff;
+  --color-sage: #5e9d91;
+  --color-sage-soft: #2d3838;
+  --color-ink: #bababe;
+  --color-ink-soft: #8b8b91;
+  --color-on-accent: #007878;
+  --color-surface: rgba(255, 255, 255, 0.06);
+  --color-surface-soft: rgba(255, 255, 255, 0.05);
+  --color-surface-2: rgba(255, 255, 255, 0.08);
+  --color-surface-strong: rgba(255, 255, 255, 0.1);
+  --color-surface-solid: rgba(65, 65, 67, 0.95);
+  --color-line: rgba(255, 255, 255, 0.12);
+  --color-line-soft: rgba(255, 255, 255, 0.08);
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --bg-base: #222224;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(253, 255, 255, 0.18), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(94, 157, 145, 0.16), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(133, 133, 135, 0.14), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #38383a 0%, #222224 45%, #1d1d1f 100%);
+  --color-chip: rgba(0, 0, 0, 0.22);
+  --color-chip-line: rgba(255, 255, 255, 0.16);
+  --color-chip-text: #86868c;
+}
+
+:root[data-theme="sunprincess"] {
+  --color-cream: #cd3f3e;
+  --color-sand: #cf4746;
+  --color-gold: #fed975;
+  --color-gold-soft: #fee7a8;
+  --color-sage: #202024;
+  --color-sage-soft: #ab2b2b;
+  --color-ink: #ffffff;
+  --color-ink-soft: #f5ecec;
+  --color-on-accent: #735401;
+  --color-surface: rgba(255, 255, 255, 0.06);
+  --color-surface-soft: rgba(255, 255, 255, 0.05);
+  --color-surface-2: rgba(255, 255, 255, 0.08);
+  --color-surface-strong: rgba(255, 255, 255, 0.1);
+  --color-surface-solid: rgba(209, 75, 74, 0.95);
+  --color-line: rgba(255, 255, 255, 0.12);
+  --color-line-soft: rgba(255, 255, 255, 0.08);
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --bg-base: #c92e2d;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(254, 217, 117, 0.18), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(32, 32, 36, 0.16), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(225, 140, 140, 0.14), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #ce4342 0%, #c92e2d 45%, #ab2726 100%);
+  --color-chip: rgba(0, 0, 0, 0.22);
+  --color-chip-line: rgba(255, 255, 255, 0.16);
+  --color-chip-text: #dfc4c4;
+}
+
+:root[data-theme="songmo"] {
+  --color-cream: #45577c;
+  --color-sand: #4d5e82;
+  --color-gold: #2a6742;
+  --color-gold-soft: #1b432b;
+  --color-sage: #982a37;
+  --color-sage-soft: #474367;
+  --color-ink: #f4f5f9;
+  --color-ink-soft: #b1bdd5;
+  --color-on-accent: #ffffff;
+  --color-surface: rgba(255, 255, 255, 0.06);
+  --color-surface-soft: rgba(255, 255, 255, 0.05);
+  --color-surface-2: rgba(255, 255, 255, 0.08);
+  --color-surface-strong: rgba(255, 255, 255, 0.1);
+  --color-surface-solid: rgba(81, 98, 133, 0.95);
+  --color-line: rgba(255, 255, 255, 0.12);
+  --color-line-soft: rgba(255, 255, 255, 0.08);
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --bg-base: #354871;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(42, 103, 66, 0.18), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(152, 42, 55, 0.16), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(144, 154, 177, 0.14), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #495a7f 0%, #354871 45%, #2d3d60 100%);
+  --color-chip: rgba(0, 0, 0, 0.22);
+  --color-chip-line: rgba(255, 255, 255, 0.16);
+  --color-chip-text: #97a6c7;
+}
+
+:root[data-theme="fox"] {
+  --color-cream: #fef8fe;
+  --color-sand: #edc9e9;
+  --color-gold: #deaef4;
+  --color-gold-soft: #f0dbfa;
+  --color-sage: #fcf1fd;
+  --color-sage-soft: #fcdbf9;
+  --color-ink: #542d50;
+  --color-ink-soft: #894a82;
+  --color-on-accent: #7616a1;
+  --color-surface: rgba(255, 255, 255, 0.5);
+  --color-surface-soft: rgba(255, 255, 255, 0.45);
+  --color-surface-2: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-surface-solid: rgba(255, 255, 255, 0.95);
+  --color-line: rgba(84, 45, 80, 0.14);
+  --color-line-soft: rgba(84, 45, 80, 0.1);
+  --color-overlay: rgba(0, 0, 0, 0.4);
+  --bg-base: #fcd6f8;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(222, 174, 244, 0.14), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(252, 241, 253, 0.14), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(253, 232, 251, 0.5), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #fde4fa 0%, #fcd6f8 45%, #edc9e9 100%);
+  --color-chip: rgba(255, 255, 255, 0.55);
+  --color-chip-line: rgba(84, 45, 80, 0.16);
+  --color-chip-text: #96518f;
+}
+
+:root[data-theme="t6154"] {
+  --color-cream: #ffffff;
+  --color-sand: #f0f0f0;
+  --color-gold: #ccacf9;
+  --color-gold-soft: #e9dcfc;
+  --color-sage: #c24049;
+  --color-sage-soft: #f4ddde;
+  --color-ink: #4c4c4c;
+  --color-ink-soft: #707070;
+  --color-on-accent: #580ec1;
+  --color-surface: rgba(255, 255, 255, 0.5);
+  --color-surface-soft: rgba(255, 255, 255, 0.45);
+  --color-surface-2: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-surface-solid: rgba(255, 255, 255, 0.95);
+  --color-line: rgba(76, 76, 76, 0.14);
+  --color-line-soft: rgba(76, 76, 76, 0.1);
+  --color-overlay: rgba(0, 0, 0, 0.4);
+  --bg-base: #ffffff;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(204, 172, 249, 0.14), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(194, 64, 73, 0.14), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(255, 255, 255, 0.5), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #ffffff 0%, #ffffff 45%, #f0f0f0 100%);
+  --color-chip: rgba(255, 255, 255, 0.55);
+  --color-chip-line: rgba(76, 76, 76, 0.16);
+  --color-chip-text: #707070;
+}
+
+:root[data-theme="jiahu"] {
+  --color-cream: #ffffff;
+  --color-sand: #eeefef;
+  --color-gold: #e63c41;
+  --color-gold-soft: #ec696d;
+  --color-sage: #f6dc80;
+  --color-sage-soft: #fcf8e7;
+  --color-ink: #2d5454;
+  --color-ink-soft: #437c7c;
+  --color-on-accent: #1f0405;
+  --color-surface: rgba(255, 255, 255, 0.5);
+  --color-surface-soft: rgba(255, 255, 255, 0.45);
+  --color-surface-2: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-surface-solid: rgba(255, 255, 255, 0.95);
+  --color-line: rgba(45, 84, 84, 0.14);
+  --color-line-soft: rgba(45, 84, 84, 0.1);
+  --color-overlay: rgba(0, 0, 0, 0.4);
+  --bg-base: #fdfefe;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(230, 60, 65, 0.14), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(246, 220, 128, 0.14), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(254, 254, 254, 0.5), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #fefefe 0%, #fdfefe 45%, #eeefef 100%);
+  --color-chip: rgba(255, 255, 255, 0.55);
+  --color-chip-line: rgba(45, 84, 84, 0.16);
+  --color-chip-text: #437c7c;
+}
+
+:root[data-theme="god"] {
+  --color-cream: #ebfcf2;
+  --color-sand: #85deab;
+  --color-gold: #509465;
+  --color-gold-soft: #69ae7e;
+  --color-sage: #ee7875;
+  --color-sage-soft: #9fd7aa;
+  --color-ink: #203c2c;
+  --color-ink-soft: #366449;
+  --color-on-accent: #101d14;
+  --color-surface: rgba(255, 255, 255, 0.5);
+  --color-surface-soft: rgba(255, 255, 255, 0.45);
+  --color-surface-2: rgba(255, 255, 255, 0.62);
+  --color-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-surface-solid: rgba(255, 255, 255, 0.95);
+  --color-line: rgba(32, 60, 44, 0.14);
+  --color-line-soft: rgba(32, 60, 44, 0.1);
+  --color-overlay: rgba(0, 0, 0, 0.4);
+  --bg-base: #8eecb6;
+  --bg-glow-1: radial-gradient(1100px 560px at 12% -10%, rgba(80, 148, 101, 0.14), transparent 60%);
+  --bg-glow-2: radial-gradient(900px 520px at 100% 0%, rgba(238, 120, 117, 0.14), transparent 55%);
+  --bg-glow-3: radial-gradient(800px 600px at 50% 112%, rgba(193, 245, 215, 0.5), transparent 62%);
+  --bg-gradient: linear-gradient(160deg, #b6f3d0 0%, #8eecb6 45%, #85deab 100%);
+  --color-chip: rgba(255, 255, 255, 0.55);
+  --color-chip-line: rgba(32, 60, 44, 0.16);
+  --color-chip-text: #3d7153;
+}
+
 html,
 body,
 #root {
@@ -382,8 +780,6 @@ body {
   margin: 0;
   color: var(--color-ink);
   background-color: var(--bg-base);
-  background-image: var(--bg-glow-1), var(--bg-glow-2), var(--bg-glow-3), var(--bg-gradient);
-  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.3s ease, color 0.3s ease;
 }

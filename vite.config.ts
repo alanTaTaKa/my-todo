@@ -16,7 +16,7 @@ export default defineConfig({
         short_name: '今日待办',
         description: '清新治愈系待办应用，本地优先、可离线使用',
         lang: 'zh-CN',
-        start_url: '/',
+        start_url: '/app',
         scope: '/',
         display: 'standalone',
         background_color: '#fbf7ef',

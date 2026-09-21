@@ -1,5 +1,6 @@
 import type { Priority, Tag, TagColorKey, Task, UserProfile } from '../types'
 import type { CustomPalette, SavedPalette } from './palettes'
+import type { Entitlements } from './entitlements'
 import { DEFAULT_THEME, THEME_IDS, THEME_STORAGE_KEY, type ThemeId } from './themes'
 
 const TASKS_KEY = 'todo-app:tasks'
@@ -9,6 +10,7 @@ const CUSTOM_CSS_KEY = 'todo-app:custom-theme-css'
 const SAVED_PALETTES_KEY = 'todo-app:custom-palettes'
 const ACTIVE_SYNC_USER_KEY = 'todo-app:sync-user'
 const PROFILE_KEY = 'todo-app:profile'
+const ENTITLEMENTS_KEY = 'todo-app:entitlements'
 
 const PRIORITIES: Priority[] = ['none', 'low', 'medium', 'high']
 
@@ -265,6 +267,49 @@ export function loadProfile(): UserProfile | null {
 export function saveProfile(profile: UserProfile): void {
   try {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile))
+  } catch {
+    // 忽略写入失败
+  }
+}
+
+function normalizeEntitlements(value: unknown): Entitlements | null {
+  if (typeof value !== 'object' || value === null) return null
+  const raw = value as Partial<Entitlements>
+  if (raw.plan !== 'free' && raw.plan !== 'pro') return null
+  if (
+    !Array.isArray(raw.features) ||
+    !raw.features.every((feature) => typeof feature === 'string')
+  ) {
+    return null
+  }
+  return {
+    plan: raw.plan,
+    features: raw.features,
+    expiresAt: typeof raw.expiresAt === 'number' ? raw.expiresAt : null,
+  }
+}
+
+export function loadEntitlementsCache(): Entitlements | null {
+  try {
+    const raw = localStorage.getItem(ENTITLEMENTS_KEY)
+    if (!raw) return null
+    return normalizeEntitlements(JSON.parse(raw))
+  } catch {
+    return null
+  }
+}
+
+export function saveEntitlementsCache(entitlements: Entitlements): void {
+  try {
+    localStorage.setItem(ENTITLEMENTS_KEY, JSON.stringify(entitlements))
+  } catch {
+    // 忽略写入失败
+  }
+}
+
+export function clearEntitlementsCache(): void {
+  try {
+    localStorage.removeItem(ENTITLEMENTS_KEY)
   } catch {
     // 忽略写入失败
   }

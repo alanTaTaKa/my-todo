@@ -36,6 +36,13 @@
       "when": 1789400311404,
       "tag": "0004_profiles_feedback",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789757649109,
+      "tag": "0005_entitlements",
+      "breakpoints": true
     }
   ]
 }

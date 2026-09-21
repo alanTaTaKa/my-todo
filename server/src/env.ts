@@ -15,6 +15,15 @@ function optionalNumber(name: string, fallback: number): number {
   return Number.isFinite(value) ? value : fallback
 }
 
+function optionalList(name: string): string[] {
+  const raw = process.env[name]
+  if (!raw) return []
+  return raw
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
 const nodeEnv = process.env.NODE_ENV ?? 'development'
 
 export const isProduction = nodeEnv === 'production'
@@ -34,6 +43,7 @@ export const env = {
   appOrigin: process.env.APP_ORIGIN ?? 'http://localhost:5173',
   sessionTtlDays: optionalNumber('SESSION_TTL_DAYS', 30),
   cookieSameSite: resolveSameSite(),
+  redeemCodes: optionalList('REDEEM_CODES'),
 }
 
 export const cookieSecure = isProduction || env.cookieSameSite === 'None'

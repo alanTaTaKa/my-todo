@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AppHeader } from './components/AppHeader'
 import { AuthPanel } from './components/AuthPanel'
 import { FeedbackPanel } from './components/FeedbackPanel'
@@ -10,8 +10,10 @@ import { TagManager } from './components/TagManager'
 import { TaskInput } from './components/TaskInput'
 import { TaskItem } from './components/TaskItem'
 import { ThemePanel } from './components/ThemePanel'
+import { UpgradePanel } from './components/UpgradePanel'
 import { VersionPanel } from './components/VersionPanel'
 import { useAuth } from './hooks/useAuth'
+import { useEntitlements } from './hooks/useEntitlements'
 import { useProfile } from './hooks/useProfile'
 import { useSync } from './hooks/useSync'
 import { useTags } from './hooks/useTags'
@@ -19,6 +21,7 @@ import { useTasks } from './hooks/useTasks'
 import { useTheme } from './hooks/useTheme'
 import { matchesDateFilter } from './lib/date'
 import { sortTasks } from './lib/sort'
+import { themeMode } from './lib/themes'
 import { CURRENT_VERSION } from './lib/version'
 import type { DateFilter, SortDirection, SortKey, StatusFilter, Task } from './types'
 
@@ -57,6 +60,17 @@ function App() {
 
   const { user, loading: authLoading, register, login, logout, deleteAccount } =
     useAuth()
+
+  const { isPro, resolved: entitlementsResolved, redeem } = useEntitlements(
+    user,
+    !authLoading,
+  )
+
+  useEffect(() => {
+    if (!entitlementsResolved || isPro) return
+    const current = themeMode(themeId)
+    if (current === 'anime' || current === 'guofeng') setThemeId('fresh')
+  }, [entitlementsResolved, isPro, themeId, setThemeId])
 
   const {
     title: profileTitle,
@@ -99,6 +113,7 @@ function App() {
   const [statsOpen, setStatsOpen] = useState(false)
   const [versionOpen, setVersionOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
   const [page, setPage] = useState(1)
@@ -179,6 +194,7 @@ function App() {
         <AppHeader
           title={profileTitle}
           subtitle={profileSubtitle}
+          editable={isPro}
           onChange={updateProfile}
         />
 
@@ -312,6 +328,19 @@ function App() {
               </svg>
               主题
             </button>
+            {!isPro && (
+              <button
+                type="button"
+                onClick={() => setUpgradeOpen(true)}
+                className="inline-flex items-center gap-1 rounded-full border border-gold/40 bg-gold/10 px-2.5 py-1 font-medium text-gold transition hover:bg-gold/20"
+              >
+                <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 3v4M12 17v4M3 12h4M17 12h4" />
+                  <path d="M12 8.5 13.2 11l2.8.4-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.8-.4Z" />
+                </svg>
+                升级版
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setAccountOpen(true)}
@@ -372,11 +401,25 @@ function App() {
           customPalette={customPalette}
           savedPalettes={savedPalettes}
           onSelect={setThemeId}
+          isCustomUnlocked={isPro}
+          onRequestUpgrade={() => {
+            setThemeOpen(false)
+            setUpgradeOpen(true)
+          }}
           onSelectCustom={applyCustomTheme}
           onAddSavedPalette={addSavedPalette}
           onRenameSavedPalette={renameSavedPalette}
           onDeleteSavedPalette={deleteSavedPalette}
           onClose={() => setThemeOpen(false)}
+        />
+      )}
+
+      {upgradeOpen && (
+        <UpgradePanel
+          isPro={isPro}
+          canRedeem={Boolean(user)}
+          onRedeem={redeem}
+          onClose={() => setUpgradeOpen(false)}
         />
       )}
 

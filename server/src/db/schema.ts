@@ -7,6 +7,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core'
 
@@ -113,6 +114,25 @@ export const profiles = pgTable('profiles', {
   updatedAt: bigint('updated_at', { mode: 'number' }).notNull(),
   syncedAt: bigint('synced_at', { mode: 'number' }).notNull(),
 })
+
+export const entitlements = pgTable(
+  'entitlements',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    feature: text('feature').notNull(),
+    source: text('source').notNull().default('manual'),
+    status: text('status').notNull().default('active'),
+    grantedAt: timestamp('granted_at', { withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('entitlements_user_feature_idx').on(table.userId, table.feature),
+  ],
+)
 
 export const feedback = pgTable(
   'feedback',
